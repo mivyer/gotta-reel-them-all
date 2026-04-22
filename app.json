@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Gotta Reel Them All",
+    "slug": "gotta-reel-them-all",
+    "version": "1.0.0",
+    "scheme": "gottareelthemall",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-asset",
+      "expo-font"
+    ]
+  }
+}
