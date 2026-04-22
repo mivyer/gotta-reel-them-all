@@ -1,1 +1,7 @@
-read me description
+instructions:
+
+clone this branch
+
+in terminal: run these commands
+npm install
+npm start
