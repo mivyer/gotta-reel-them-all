@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useRouter } from 'expo-router';
-import {FIREBASE_AUTH} from '../../services/firebase';
+import { FIREBASE_AUTH } from '../../services/firebase';
 import { NavigationProp } from '@react-navigation/native';
 
 const W = Dimensions.get('window').width;
@@ -60,7 +60,7 @@ interface RouteProps {
   navigation: NavigationProp<any, any>;
 }
 
-export default function HomeScreen({navigation}: RouteProps) {
+export default function HomeScreen({ navigation }: RouteProps) {
   const router = useRouter();
 
   const [steps, setSteps] = useState(START_STEPS);
@@ -183,35 +183,41 @@ export default function HomeScreen({navigation}: RouteProps) {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style = {styles.modalTitle}> You've reached a new checkpoint!</Text>
+            <Text style={styles.modalTitle}> You've reached a new checkpoint!</Text>
             {/* <Image
               source={require("../../assets/images/checkpoint-background.png")}
               style={styles.backgroundImage}/> */}
-              
-              <Text style = {styles.stepCountPopup}> {NEXT_CHECKPOINT} </Text>
-          
-            <Text style = {{fontFamily: "Dokdo", fontSize: 20, textAlign: "center"}}> A swarm of bug-reels approaches... </Text>
-          {modalMode === "actions" && (
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={styles.greyButton}
-                onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>no reels for me</Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.blueButton}
-                onPress={handleConfirmCatch}>
-                <Text style={styles.buttonText}>catch em</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+            <Text style={styles.stepCountPopup}> {NEXT_CHECKPOINT} </Text>
+
+            <Text style={{ fontFamily: "Dokdo", fontSize: 20, textAlign: "center" }}> A swarm of bug-reels approaches... </Text>
+            {modalMode === "actions" && (
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.greyButton}
+                  onPress={() => setModalVisible(false)}>
+                  <Text style={styles.buttonText}>no reels for me</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.blueButton}
+                  onPress={handleConfirmCatch}>
+                  <Text style={styles.buttonText}>catch em</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
       </Modal >
-      <Button onPress = {() => FIREBASE_AUTH.signOut()} title="Logout" />
+      <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={[{
+        padding: 12,
+        backgroundColor: "#D9D9D9",
+        borderRadius: 8
+      },]}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
-      
+
   );
 }
 
@@ -294,7 +300,7 @@ const styles = StyleSheet.create({
     alignItems: "center", // Center horizontally
     backgroundColor: "rgba(0,0,0,0.5)" // Dark overlay
   },
-    modalContent: {
+  modalContent: {
     paddingTop: 60,
     width: "50%",
     height: "80%",
@@ -307,13 +313,13 @@ const styles = StyleSheet.create({
     fontFamily: "Dokdo",
     fontSize: 35,
     textAlign: "center"
-  }, 
+  },
   backgroundImage: {
     paddingTop: 20,
     width: "80%",
     height: "60%"
   },
-  stepCountPopup :{
+  stepCountPopup: {
     fontFamily: "Dokdo",
     fontSize: 100,
     textAlign: "center"
