@@ -16,7 +16,7 @@ export default function BugReel1() {
   return (
     <Animated.View style={{ transform: [{ translateY: wobble }] }}>
       <Image
-        source={require('@/assets/images/bugreel0.png')}
+        source={require('../assets/images/bugreel0.png')}
         style={{ width: 60, height: 60 }}
         resizeMode="contain"
       />

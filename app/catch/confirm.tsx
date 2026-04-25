@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Image, Platform, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGameStore } from '@/store/useGameStore';
-import ReelFrame from '@/components/ReelFrame';
+import { useGameStore } from '../../store/useGameStore';
+import ReelFrame from '../../components/ReelFrame';
 
 const W = Platform.OS === 'web' ? 390 : Dimensions.get('window').width;
 
@@ -28,10 +28,7 @@ export default function CatchConfirmScreen() {
 
   if (!reel) return <View style={styles.container} />;
 
-  const isBlue = reel.color === 'blue';
-  const bgImage = isBlue
-    ? require('@/assets/figma/catch-confirm-blue.png')
-    : require('@/assets/figma/catch-confirm-pink.png');
+  const bgImage = require('../../assets/figma/catch-confirm-blue.png') | require('../../assets/figma/catch-confirm-pink.png');
 
   return (
     <TouchableOpacity style={styles.container} onPress={handleTap} activeOpacity={1}>
@@ -42,7 +39,6 @@ export default function CatchConfirmScreen() {
       <Animated.View style={[styles.frameWrap, { transform: [{ scale }], opacity }]}>
         <ReelFrame
           videoUrl={reel.videoUrl}
-          color={reel.color}
           width={W * 0.72}
           height={W * 0.72 * 0.65}
           playing
@@ -71,13 +67,13 @@ const styles = StyleSheet.create({
   },
   textWrap: { alignItems: 'center', marginTop: 40, gap: 12 },
   congratsText: {
-    fontFamily: 'Dokdo_400Regular',
+    fontFamily: 'Dokdo',
     fontSize: 28,
     color: '#000000',
     textAlign: 'center',
   },
   tapText: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 16,
     color: '#000000',
     textAlign: 'center',

@@ -2,8 +2,8 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, PanResponder, StyleSheet, View } from 'react-native';
 
-import BugReel1 from '@/components/bug-reel1';
-import BugReel2 from '@/components/bug-reel2';
+import BugReel1 from '../../components/bug-reel1';
+import BugReel2 from '../../components/bug-reel2';
 
 type Bug = {
   id: number;

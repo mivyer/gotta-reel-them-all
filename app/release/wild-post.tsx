@@ -6,9 +6,7 @@ export default function WildPostReleaseScreen() {
   const { color } = useLocalSearchParams<{ color: string }>();
   const router = useRouter();
   const isBlue = color !== 'pink';
-  const bgImage = isBlue
-    ? require('@/assets/figma/wild-post-blue.png')
-    : require('@/assets/figma/wild-post-pink.png');
+  const bgImage = require('../../assets/figma/wild-post-blue.png') | require('../../assets/figma/wild-post-pink.png');
 
   return (
     <View style={styles.container}>
@@ -43,10 +41,10 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', justifyContent: 'flex-end',
     padding: 32, paddingBottom: 64, gap: 16,
   },
-  byeTitle: { fontFamily: 'Dokdo_400Regular', fontSize: 64, color: '#000000', textAlign: 'center' },
-  description: { fontFamily: 'Dokdo_400Regular', fontSize: 32, color: '#000000', textAlign: 'center', lineHeight: 36 },
+  byeTitle: { fontFamily: 'Dokdo', fontSize: 64, color: '#000000', textAlign: 'center' },
+  description: { fontFamily: 'Dokdor', fontSize: 32, color: '#000000', textAlign: 'center', lineHeight: 36 },
   btn: { width: '100%', backgroundColor: '#ffffff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
-  btnText: { fontFamily: 'Agdasima_400Regular', fontSize: 20, color: '#000000' },
+  btnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
   homeBtn: { paddingVertical: 10 },
-  homeBtnText: { fontFamily: 'Agdasima_400Regular', fontSize: 16, color: '#000000' },
+  homeBtnText: { fontFamily: 'Agdasima', fontSize: 16, color: '#000000' },
 });

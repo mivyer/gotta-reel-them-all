@@ -28,7 +28,7 @@ export default function WatchScreen() {
       onPress={() => router.back()}
     >
       <Image
-        source={require("@/assets/images/close-button.png")}
+        source={require("../../assets/images/close-button.png")}
         style={styles.iconImage}
       />
     </TouchableOpacity>
@@ -89,7 +89,7 @@ iconImage: {
     borderRadius: 30,
   },
   nameBtnText: {
-    fontFamily: "Dokdo_400Regular",
+    fontFamily: "Dokdo",
     fontSize: 24,
     color: "#000000",
   },

@@ -5,7 +5,6 @@ export type BugReel = {
   name: string;
   thumbnail: any;
   videoUrl: any;
-  color: 'blue' | 'pink';
   caughtAt: number;
 };
 
@@ -41,6 +40,7 @@ interface GameState {
   addFriend: (friend: Friend) => void;
   setCheckpoint: (val: boolean) => void;
 }
+
 
 export const useGameStore = create<GameState>((set) => ({
   reels: [

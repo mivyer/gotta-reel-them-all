@@ -4,7 +4,7 @@ import {
   KeyboardAvoidingView, Platform, Animated, Image, Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGameStore } from '@/store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
 
 const W = Platform.OS === 'web' ? 390 : Dimensions.get('window').width;
 
@@ -38,11 +38,8 @@ export default function NameReelScreen() {
 
   if (!reel) return <View style={styles.container}><Text style={styles.error}>Reel not found.</Text></View>;
 
-  const isBlue = reel.color === 'blue';
-  const accent = isBlue ? '#9cebff' : '#ff7ac1';
-  const bgImage = isBlue
-    ? require('@/assets/figma/naming-blue.png')
-    : require('@/assets/figma/naming-pink.png');
+  const accent = '#9cebff' ;
+  const bgImage = require('../../assets/figma/naming-blue.png') | require('../../assets/figma/naming-pink.png');
 
   return (
     <KeyboardAvoidingView
@@ -99,7 +96,7 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 24, paddingTop: 16, gap: 20 },
 
   prompt: {
-    fontFamily: 'Dokdo_400Regular',
+    fontFamily: 'Dokdo',
     fontSize: 28,
     color: '#000000',
     textAlign: 'center',
@@ -118,12 +115,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   input: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 20,
     color: '#000000',
     paddingVertical: 16,
   },
-  errorMsg: { fontFamily: 'Agdasima_400Regular', fontSize: 14, color: '#ff7ac1', textAlign: 'center' },
+  errorMsg: { fontFamily: 'Agdasima', fontSize: 14, color: '#ff7ac1', textAlign: 'center' },
 
   btnRow: { flexDirection: 'row', gap: 14 },
   cancelBtn: {
@@ -133,13 +130,13 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
   },
-  cancelBtnText: { fontFamily: 'Agdasima_400Regular', fontSize: 20, color: '#000000' },
+  cancelBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
   saveBtn: {
     flex: 1,
     borderRadius: 30,
     paddingVertical: 16,
     alignItems: 'center',
   },
-  saveBtnText: { fontFamily: 'Agdasima_400Regular', fontSize: 20, color: '#000000' },
-  error: { fontFamily: 'Agdasima_400Regular', fontSize: 18, color: '#000', textAlign: 'center', marginTop: 80 },
+  saveBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
+  error: { fontFamily: 'Agdasima', fontSize: 18, color: '#000', textAlign: 'center', marginTop: 80 },
 });

@@ -2,11 +2,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { useGameStore, REEL_VIDEOS } from '@/store/useGameStore';
-import BugReel1 from '@/components/bug-reel1';
-import BugReel2 from '@/components/bug-reel2';
+import { useGameStore, REEL_VIDEOS } from '../../store/useGameStore';
+import BugReel1 from '../../components/bug-reel1';
+import BugReel2 from '../../components/bug-reel2';
 
-const PLACEHOLDER = require('@/assets/images/thumbnail-placeholder.png');
+const PLACEHOLDER = require('../../assets/images/thumbnail-placeholder.png');
 
 export default function CatchPopup() {
   const router = useRouter();
@@ -70,11 +70,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: 'Dokdo_400Regular',
+    fontFamily: 'Dokdo',
   },
   subtitle: {
     fontSize: 14,
     color: '#666',
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
   },
 });

@@ -1,19 +1,32 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
-import { Dokdo_400Regular } from '@expo-google-fonts/dokdo';
-import { Agdasima_400Regular } from '@expo-google-fonts/agdasima';
+import { useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Dokdo_400Regular,
-    Agdasima_400Regular,
+    Dokdo: require("../assets/fonts/Dokdo-Regular.ttf"),
+    Agdasima: require("../assets/fonts/Agdasima-Regular.ttf"),
   });
 
-  if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: '#9cebff' }} />;
-  }
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!user && !inAuthGroup) {
+      router.replace('/(auth)/login');
+    } else if (user && inAuthGroup) {
+      router.replace('/screens');
+    }
+  }, [user, loading]);
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -21,11 +34,12 @@ export default function RootLayout() {
         screenOptions={{
           headerStyle: { backgroundColor: '#9cebff' },
           headerTintColor: '#000000',
-          headerTitleStyle: { fontFamily: 'Dokdo_400Regular', fontSize: 24, color: '#000000' },
+          headerTitleStyle: { fontFamily: 'Dokdo', fontSize: 24, color: '#000000' },
           contentStyle: { backgroundColor: '#ffffff' },
         }}
       >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/login" options={{ headerShown: false }}/>
+        <Stack.Screen name="screens" options={{ headerShown: false }} />
         <Stack.Screen name="catch/index" options={{ headerShown: false }} />
         <Stack.Screen name="catch/catch-popup" options={{ headerShown: false }} />
         <Stack.Screen name="catch/confirm" options={{ headerShown: false }} />
@@ -46,6 +60,12 @@ export default function RootLayout() {
           options={{ presentation: 'modal', headerShown: false }}
         />
       </Stack>
+      {(!fontsLoaded || loading) && (
+        <View style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: '#9cebff'
+        }} />
+      )}
     </GestureHandlerRootView>
   );
 }

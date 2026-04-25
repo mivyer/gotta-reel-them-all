@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGameStore, BugReel } from '@/store/useGameStore';
-import FigmaHeader from '@/components/FigmaHeader';
-import { ReelFrameSmall } from '@/components/ReelFrame';
+import { useGameStore, BugReel } from '../../store/useGameStore';
+import FigmaHeader from '../../components/FigmaHeader';
+import { ReelFrameSmall } from '../../components/ReelFrame';
 
 const { width } = Dimensions.get('window');
 const CARD = (width - 48 - 12) / 2;
@@ -25,8 +25,7 @@ export default function TradeScreen() {
   };
 
   const renderReel = ({ item }: { item: BugReel }) => {
-    const isBlue = item.color === 'blue';
-    const accent = isBlue ? '#9cebff' : '#ff7ac1';
+    const accent = '#9cebff';
     const selected = selectedId === item.id;
     return (
       <TouchableOpacity
@@ -34,7 +33,7 @@ export default function TradeScreen() {
         onPress={() => setSelectedId(selected ? null : item.id)}
         activeOpacity={0.8}
       >
-        <ReelFrameSmall videoUrl={item.videoUrl} color={item.color} />
+        <ReelFrameSmall videoUrl={item.videoUrl}/>
         <Text style={styles.cardName} numberOfLines={1}>{item.name !== 'Unknown Reel' ? item.name : 'Unnamed'}</Text>
         <View style={[styles.colorDot, { backgroundColor: accent }]} />
       </TouchableOpacity>
@@ -87,21 +86,21 @@ export default function TradeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff' },
-  prompt: { fontFamily: 'Agdasima_400Regular', fontSize: 18, color: '#a7a7a7', paddingHorizontal: 20, paddingTop: 12 },
+  prompt: { fontFamily: 'Agdasima', fontSize: 18, color: '#a7a7a7', paddingHorizontal: 20, paddingTop: 12 },
   grid: { padding: 16 },
   row: { gap: 12, marginBottom: 12 },
   card: { width: CARD, borderRadius: 12, borderWidth: 2, backgroundColor: '#f8f8f8', alignItems: 'center', padding: 12, gap: 6 },
-  cardName: { fontFamily: 'Agdasima_400Regular', fontSize: 14, color: '#000000' },
+  cardName: { fontFamily: 'Agdasima', fontSize: 14, color: '#000000' },
   colorDot: { width: 12, height: 12, borderRadius: 6 },
   footer: { padding: 20, gap: 12 },
   sendBtn: { backgroundColor: '#9cebff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
   sendBtnDisabled: { backgroundColor: '#e8e8e8' },
-  sendBtnText: { fontFamily: 'Agdasima_400Regular', fontSize: 20, color: '#000000' },
+  sendBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
   sendBtnTextDisabled: { color: '#a7a7a7' },
-  cancelText: { fontFamily: 'Agdasima_400Regular', fontSize: 16, color: '#a7a7a7', textAlign: 'center' },
+  cancelText: { fontFamily: 'Agdasima', fontSize: 16, color: '#a7a7a7', textAlign: 'center' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
-  emptyTitle: { fontFamily: 'Dokdo_400Regular', fontSize: 32, color: '#000000' },
-  emptyBody: { fontFamily: 'Agdasima_400Regular', fontSize: 18, color: '#a7a7a7' },
+  emptyTitle: { fontFamily: 'Dokdo', fontSize: 32, color: '#000000' },
+  emptyBody: { fontFamily: 'Agdasima', fontSize: 18, color: '#a7a7a7' },
   catchBtn: { backgroundColor: '#9cebff', borderRadius: 30, paddingVertical: 14, paddingHorizontal: 32 },
-  catchBtnText: { fontFamily: 'Agdasima_400Regular', fontSize: 18, color: '#000000' },
+  catchBtnText: { fontFamily: 'Agdasima', fontSize: 18, color: '#000000' },
 });

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGameStore } from '@/store/useGameStore';
-import { ReelFrameLarge } from '@/components/ReelFrame';
-import FigmaHeader from '@/components/FigmaHeader';
+import { useGameStore } from '../store/useGameStore';
+import { ReelFrameLarge } from '../components/ReelFrame';
+import FigmaHeader from '../components/FigmaHeader';
 
 export default function BugInfoScreen() {
   const { reelId } = useLocalSearchParams<{ reelId: string }>();
@@ -15,12 +15,8 @@ export default function BugInfoScreen() {
     return <View style={styles.container}><Text style={styles.error}>Reel not found.</Text></View>;
   }
 
-  const isBlue = reel.color === 'blue';
   const isNamed = reel.name !== 'Unknown Reel';
-  const accent = isBlue ? '#9cebff' : '#ff7ac1';
-  const bgImage = isBlue
-    ? require('@/assets/figma/bug-info-blue.png')
-    : require('@/assets/figma/bug-info-pink.png');
+  const bgImage = require('../assets/figma/bug-info-blue.png') | require('../assets/figma/bug-info-pink.png');
 
   return (
     <View style={styles.container}>
@@ -28,9 +24,9 @@ export default function BugInfoScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Creature frame with video */}
         <View style={styles.frameSection}>
-          <ReelFrameLarge videoUrl={reel.videoUrl} color={reel.color} playing />
+          <ReelFrameLarge videoUrl={reel.videoUrl} playing />
           {/* Figma glow shadow */}
-          <View style={[styles.glow, { backgroundColor: accent }]} />
+          <View style={[styles.glow, { backgroundColor: '#9cebff' }]} />
         </View>
 
         {/* Name */}
@@ -42,7 +38,7 @@ export default function BugInfoScreen() {
 
         {/* Info */}
         <Text style={styles.infoLine}>
-          Caught {new Date(reel.caughtAt).toLocaleDateString()} · {isBlue ? 'Blue' : 'Pink'} variant · {isNamed ? 'Named' : 'Unnamed'}
+          Caught {new Date(reel.caughtAt).toLocaleDateString()} · {isNamed ? 'Named' : 'Unnamed'}
         </Text>
 
         {/* Bottom buttons: Release | Watch | Rename | Share */}
@@ -95,19 +91,19 @@ const styles = StyleSheet.create({
   },
 
   reelName: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 20,
     color: '#000000',
     textAlign: 'center',
   },
   reelNameMuted: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 18,
     color: '#a7a7a7',
     textAlign: 'center',
   },
   infoLine: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 16,
     color: '#a7a7a7',
     textAlign: 'center',
@@ -127,9 +123,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   grayBtnText: {
-    fontFamily: 'Agdasima_400Regular',
+    fontFamily: 'Agdasima',
     fontSize: 16,
     color: '#000000',
   },
-  error: { fontFamily: 'Agdasima_400Regular', fontSize: 18, color: '#000', textAlign: 'center', marginTop: 80 },
+  error: { fontFamily: 'Agdasima', fontSize: 18, color: '#000', textAlign: 'center', marginTop: 80 },
 });

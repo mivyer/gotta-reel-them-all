@@ -2,11 +2,10 @@ import React, { useRef } from 'react';
 import { View, Image, StyleSheet, ViewStyle } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 
-const FRAME_BLUE = require('@/assets/figma/bugreel-frame-blue.png');
+const FRAME_BLUE = require('../assets/figma/bugreel-frame-blue.png');
 
 interface ReelFrameProps {
   videoUrl: any;
-  color: 'blue' | 'pink';
   width?: number;
   height?: number;
   style?: ViewStyle;
@@ -16,7 +15,6 @@ interface ReelFrameProps {
 
 export default function ReelFrame({
   videoUrl,
-  color,
   width = 240,
   height = 160,
   style,
@@ -57,20 +55,18 @@ export default function ReelFrame({
   );
 }
 
-export function ReelFrameSmall({ videoUrl, color }: { videoUrl: any; color: 'blue' | 'pink' }) {
-  return <ReelFrame videoUrl={videoUrl} color={color} width={110} height={80} playing={false} />;
+export function ReelFrameSmall({ videoUrl}: { videoUrl: any}) {
+  return <ReelFrame videoUrl={videoUrl} width={110} height={80} playing={false} />;
 }
 
 export function ReelFrameLarge({
   videoUrl,
-  color,
   playing = true,
 }: {
   videoUrl: any;
-  color: 'blue' | 'pink';
   playing?: boolean;
 }) {
-  return <ReelFrame videoUrl={videoUrl} color={color} width={320} height={220} playing={playing} muted={false} />;
+  return <ReelFrame videoUrl={videoUrl} width={320} height={220} playing={playing} muted={false} />;
 }
 
 const styles = StyleSheet.create({
