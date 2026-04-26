@@ -6,6 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useGameStore } from '../../store/useGameStore';
 import FigmaHeader from '../../components/FigmaHeader';
+import { findUserByUsername } from '../../services/userService';
 
 export default function SendFriendRequestScreen() {
   const router = useRouter();
@@ -25,16 +26,47 @@ export default function SendFriendRequestScreen() {
     ]).start();
   };
 
-  const handleSend = () => {
-    const trimmed = username.trim();
-    if (!trimmed) { setError('Enter a username.'); shake(); return; }
-    if (trimmed.length < 3) { setError('At least 3 characters.'); shake(); return; }
-    if (friends.some((f) => f.username.toLowerCase() === trimmed.toLowerCase())) {
-      setError('Already friends!'); shake(); return;
+  const handleSend = async () => {
+    const trimmed = username.trim().toLowerCase();
+
+    if (!trimmed) {
+      setError('Enter a username.');
+      shake();
+      return;
     }
-    setError('');
-    addFriend({ id: `friend-${Date.now()}`, username: trimmed, reels: [] });
-    setSent(true);
+
+    if (trimmed.length < 3) {
+      setError('At least 3 characters.');
+      shake();
+      return;
+    }
+
+    if (friends.some((f) => f.username === trimmed)) {
+      setError('Already friends!');
+      shake();
+      return;
+    }
+
+    try {
+      const user = await findUserByUsername(trimmed);
+
+      if (!user) {
+        setError('User not found.');
+        shake();
+        return;
+      }
+
+      // add real friend (with UID)
+      addFriend({
+        uid: user.id,
+        username: user.username,
+      });
+
+      setSent(true);
+    } catch (e) {
+      setError('Something went wrong.');
+      shake();
+    }
   };
 
   if (sent) {

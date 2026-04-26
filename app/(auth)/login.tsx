@@ -1,11 +1,15 @@
 import { View, Button, Text, TextInput, StyleSheet } from 'react-native';
-import { FIREBASE_AUTH } from '../../services/firebase';
+import { FIREBASE_AUTH, DB} from '../../services/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { KeyboardAvoidingView } from 'react-native-web';
+import { doc, setDoc } from "firebase/firestore";
+import { useRouter } from "expo-router";
+import { KeyboardAvoidingView } from 'react-native';
 import { useState } from 'react';
-import { ActivityIndicator, TouchableOpacity} from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
 const Login = () => {
+    const router = useRouter();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -28,7 +32,19 @@ const Login = () => {
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response);
+            const uid = response.user.uid;
+
+            await setDoc(doc(DB, "users", uid), {
+                username: null,      // not set yet
+                email: email,
+                steps: 0,
+                inventory: [],
+                friends: [],
+                activeTrades: {},
+                createdAt: Date.now(),
+            });
+
+            router.replace("/set-username");
         } catch (error: any) {
             console.log(error);
             alert('Sign in failed ' + error.message);

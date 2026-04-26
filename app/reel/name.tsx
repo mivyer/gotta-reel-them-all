@@ -11,12 +11,16 @@ const W = Platform.OS === 'web' ? 390 : Dimensions.get('window').width;
 export default function NameReelScreen() {
   const { reelId } = useLocalSearchParams<{ reelId: string }>();
   const router = useRouter();
-  const reels = useGameStore((s) => s.reels);
-  const nameReel = useGameStore((s) => s.nameReel);
 
-  const reel = reels.find((r) => r.id === reelId);
-  const [name, setName] = useState(reel && reel.name !== 'Unknown Reel' ? reel.name : '');
+  const inventory = useGameStore((s) => s.inventory);
+  const renameReel = useGameStore((s) => s.renameReel);
+  const addReel = useGameStore((s) => s.addReel);
+
+  const reelItem = inventory.find((r) => r.reelId === reelId);
+
+  const [name, setName] = useState(reelItem?.name || '');
   const [error, setError] = useState('');
+
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
   const shake = () => {
@@ -28,37 +32,66 @@ export default function NameReelScreen() {
     ]).start();
   };
 
+  const bugReelFrames = [
+    require('../../assets/images/bugreel0.png'),
+    require('../../assets/images/bugreel1.png'),
+    require('../../assets/images/bugreel2.png'),
+    require('../../assets/images/bugreel3.png'),
+  ];
+
+  const bgImage =
+    bugReelFrames[Math.floor(Math.random() * bugReelFrames.length)];
+
   const handleSave = () => {
-    if (!name.trim()) { setError('Enter a name first.'); shake(); return; }
-    if (name.trim().length > 24) { setError('Max 24 characters.'); shake(); return; }
+    if (!name.trim()) {
+      setError('Enter a name first.');
+      shake();
+      return;
+    }
+
+    if (name.trim().length > 24) {
+      setError('Max 24 characters.');
+      shake();
+      return;
+    }
+
     setError('');
-    if (reelId) nameReel(reelId, name.trim());
-    router.push('/(tabs)/inventory');
+
+    if (reelId) {
+      addReel(reelId);
+      renameReel(reelId, name.trim());
+    }
+
+    router.push('/screens/inventory');
   };
 
-  if (!reel) return <View style={styles.container}><Text style={styles.error}>Reel not found.</Text></View>;
+  if (!reelId) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>Reel not found.</Text>
+      </View>
+    );
+  }
 
-  const accent = '#9cebff' ;
-  const bgImage = require('../../assets/figma/naming-blue.png') | require('../../assets/figma/naming-pink.png');
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      {/* Figma creature as the visual header */}
       <Image source={bgImage} style={styles.creatureImg} resizeMode="contain" />
 
       <View style={styles.content}>
-        {/* Figma text */}
         <Text style={styles.prompt}>Please name the bug-reel.</Text>
 
-        {/* Input box matching Figma */}
         <Animated.View style={[styles.inputBox, { transform: [{ translateX: shakeAnim }] }]}>
           <TextInput
             style={styles.input}
             value={name}
-            onChangeText={(t) => { setName(t); if (error) setError(''); }}
+            onChangeText={(t) => {
+              setName(t);
+              if (error) setError('');
+            }}
             placeholder="Type here"
             placeholderTextColor="#a7a7a7"
             maxLength={24}
@@ -67,15 +100,24 @@ export default function NameReelScreen() {
             onSubmitEditing={handleSave}
           />
         </Animated.View>
+
         {!!error && <Text style={styles.errorMsg}>{error}</Text>}
 
-        {/* Cancel | Save — matching Figma layout */}
-        <View style={styles.btnRow}>
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.cancelBtnText}>Cancel</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={styles.greyButton}
+            onPress={() => router.back()}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.saveBtn, { backgroundColor: accent }]} onPress={handleSave} activeOpacity={0.8}>
-            <Text style={styles.saveBtnText}>Save</Text>
+
+          <TouchableOpacity
+            style={styles.blueButton}
+            onPress={handleSave}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -122,21 +164,36 @@ const styles = StyleSheet.create({
   },
   errorMsg: { fontFamily: 'Agdasima', fontSize: 14, color: '#ff7ac1', textAlign: 'center' },
 
-  btnRow: { flexDirection: 'row', gap: 14 },
-  cancelBtn: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 30,
-    paddingVertical: 16,
-    alignItems: 'center',
+  greyButton: {
+    padding: 12,
+    marginVertical: 5,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
   },
-  cancelBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
-  saveBtn: {
-    flex: 1,
-    borderRadius: 30,
-    paddingVertical: 16,
-    alignItems: 'center',
+  blueButton: {
+    padding: 12,
+    marginVertical: 5,
+    backgroundColor: "#9DEBFF",
+    borderRadius: 8,
   },
-  saveBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
-  error: { fontFamily: 'Agdasima', fontSize: 18, color: '#000', textAlign: 'center', marginTop: 80 },
+  buttonText: {
+    color: "black",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontFamily: "Agdasima",
+    fontSize: 20,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 20,
+    marginTop: 20,
+  },
+  error: {
+    fontFamily: 'Agdasima',
+    fontSize: 18,
+    color: '#000',
+    textAlign: 'center',
+    marginTop: 80,
+  },
 });

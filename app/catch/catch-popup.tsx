@@ -2,43 +2,39 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { useGameStore, REEL_VIDEOS } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
+
+import { REELS_DATABASE } from '../../constants/reels-database';
 import BugReel1 from '../../components/bug-reel1';
 import BugReel2 from '../../components/bug-reel2';
 
-const PLACEHOLDER = require('../../assets/images/thumbnail-placeholder.png');
-
 export default function CatchPopup() {
   const router = useRouter();
-  const { bugId } = useLocalSearchParams();
+
   const addReel = useGameStore((s) => s.addReel);
 
-  const reelRef = useRef<{ id: string; videoUrl: any; color: 'blue' | 'pink' } | null>(null);
+  const reelRef = useRef<{ reelId: string } | null>(null);
 
   useEffect(() => {
-    const color: 'blue' | 'pink' = bugId === '1' ? 'blue' : 'pink';
-    const videoUrl = REEL_VIDEOS[Math.floor(Math.random() * REEL_VIDEOS.length)];
-    const newReel = {
-      id: Date.now().toString(),
-      name: 'Unknown Reel',
-      thumbnail: PLACEHOLDER,
-      videoUrl,
-      color,
-      caughtAt: Date.now(),
-    };
-    addReel(newReel);
-    reelRef.current = newReel;
+    const reelId = String(Math.floor(Math.random() * 20));
+
+    addReel(reelId);
+
+    reelRef.current = { reelId };
   }, []);
 
   const handleTap = () => {
     const reel = reelRef.current;
     if (!reel) return;
+
+    const video = REELS_DATABASE[reel.reelId];
+
     router.push({
       pathname: '/reel/view',
       params: {
-        reelId: reel.id,
-        name: 'Unknown Reel',
-        video: JSON.stringify(reel.videoUrl),
+        reelId: reel.reelId,
+        name: "Wild Reel",
+        video: JSON.stringify(video)
       },
     });
   };
@@ -49,7 +45,7 @@ export default function CatchPopup() {
         <Text style={styles.title}>you caught it congrats!</Text>
 
         <View style={styles.bugContainer}>
-          {bugId === '1' ? <BugReel1 /> : <BugReel2 />}
+          {Math.random() > 0.5 ? <BugReel1 /> : <BugReel2 />}
         </View>
 
         <Text style={styles.subtitle}>tap anywhere to proceed</Text>

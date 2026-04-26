@@ -5,7 +5,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 export default function WildPostReleaseScreen() {
   const { color } = useLocalSearchParams<{ color: string }>();
   const router = useRouter();
-  const isBlue = color !== 'pink';
   const bgImage = require('../../assets/figma/wild-post-blue.png') | require('../../assets/figma/wild-post-pink.png');
 
   return (

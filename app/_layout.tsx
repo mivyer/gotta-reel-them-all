@@ -39,6 +39,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(auth)/login" options={{ headerShown: false }}/>
+        <Stack.Screen name="(auth)/set-username" options={{ headerShown: false }}/>
         <Stack.Screen name="screens" options={{ headerShown: false }} />
         <Stack.Screen name="catch/index" options={{ headerShown: false }} />
         <Stack.Screen name="catch/catch-popup" options={{ headerShown: false }} />

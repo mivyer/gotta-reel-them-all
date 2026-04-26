@@ -1,76 +1,83 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGameStore, BugReel } from '../../store/useGameStore';
+import { useGameStore } from '../../store/useGameStore';
 import FigmaHeader from '../../components/FigmaHeader';
-
-function MiniReelSlot({ reel }: { reel: BugReel }) {
-  return (
-    <View style={[styles.miniSlot, { backgroundColor: '9cebff' }]}>
-      <Text style={styles.miniSlotLabel} numberOfLines={1}>
-        {reel.name !== 'Unknown Reel' ? reel.name : '—'}
-      </Text>
-    </View>
-  );
-}
 
 export default function FriendDetailScreen() {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
   const router = useRouter();
+
   const friends = useGameStore((s) => s.friends);
-  const friend = friends.find((f) => f.id === friendId);
+  const inventory = useGameStore((s) => s.inventory);
+
+  const friend = friends.find((f) => f.uid === friendId);
 
   if (!friend) {
-    return <View style={styles.container}><Text style={styles.error}>Friend not found.</Text></View>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>Friend not found.</Text>
+      </View>
+    );
   }
+
+  // ⚠️ placeholder until Firestore integration
+  const friendReels = []; // later: fetched by friend.id
 
   return (
     <View style={styles.container}>
       <FigmaHeader title={friend.username} onBack={() => router.back()} />
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+
+      <ScrollView contentContainerStyle={styles.scroll}>
         {/* Avatar */}
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
             <View style={styles.avatarHead} />
             <View style={styles.avatarBody} />
           </View>
+
           <Text style={styles.username}>{friend.username}</Text>
-          <Text style={styles.reelCount}>{friend.reels.length} reel{friend.reels.length !== 1 ? 's' : ''}</Text>
+
+          <Text style={styles.reelCount}>
+            {friendReels.length} reel{friendReels.length !== 1 ? 's' : ''}
+          </Text>
         </View>
 
         {/* Trade button */}
         <TouchableOpacity
           style={styles.tradeBtn}
-          onPress={() => router.push({ pathname: '../trade', params: { friendId: friend.id } })}
+          onPress={() =>
+            router.push({
+              pathname: '../trade',
+              params: { friendId: friend.uid },
+            })
+          }
         >
           <Text style={styles.tradeBtnText}>Trade Reels</Text>
         </TouchableOpacity>
 
-        {/* Reels grid */}
-        <Text style={styles.sectionTitle}>{friend.username}'s Reels</Text>
-        {friend.reels.length === 0 ? (
-          <Text style={styles.emptyText}>No reels yet</Text>
-        ) : (
-          <View style={styles.reelsGrid}>
-            {friend.reels.map((r) => <MiniReelSlot key={r.id} reel={r} />)}
-          </View>
-        )}
+        {/* Reels section */}
+        <Text style={styles.sectionTitle}>
+          {friend.username}'s Reels
+        </Text>
 
-        {/* Stats */}
+        <Text style={styles.emptyText}>
+          Friend reels will load from cloud (not stored locally yet)
+        </Text>
+
+        {/* Stats (local placeholder only) */}
         <View style={styles.statsRow}>
-          {/* <View style={styles.statBox}>
-            <Text style={[styles.statVal, { color: '#9cebff' }]}>{friend.reels.filter((r) => r.color === 'blue').length}</Text>
-            <Text style={styles.statLabel}>Blue</Text>
-          </View>
-          <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statVal, { color: '#ff7ac1' }]}>{friend.reels.filter((r) => r.color === 'pink').length}</Text>
-            <Text style={styles.statLabel}>Pink</Text>
-          </View> */}
-          <View style={styles.statDivider} />
-          <View style={styles.statBox}>
-            <Text style={styles.statVal}>{friend.reels.filter((r) => r.name !== 'Unknown Reel').length}</Text>
-            <Text style={styles.statLabel}>Named</Text>
+            <Text style={styles.statVal}>
+              {inventory.filter((r) => r.name !== 'Unnamed Reel :(').length}
+            </Text>
+            <Text style={styles.statLabel}>Named (you)</Text>
           </View>
         </View>
       </ScrollView>

@@ -11,7 +11,8 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useGameStore, BugReel } from "../../store/useGameStore";
+import { useGameStore, InventoryItem } from "../../store/useGameStore";
+import { REELS_DATABASE } from "../../constants/reels-database";
 
 const INVENTORY_SIZE = 12;
 
@@ -34,86 +35,104 @@ const NUM_EMPTY_FRAMES = 4;
 
 export default function InventoryScreen() {
   const router = useRouter();
-  const bugReels = useGameStore((s) => s.reels);
-  const removeReel = useGameStore((s) => s.removeReel);
-  const nameReel = useGameStore((s) => s.nameReel);
 
-  const [selectedReel, setSelectedReel] = useState<BugReel | null>(null);
-  const [modalMode, setModalMode] = useState<"actions" | "confirmRelease">("actions");
+  const inventory = useGameStore((s) => s.inventory);
+  const releaseReel = useGameStore((s) => s.releaseReel);
+  const renameReel = useGameStore((s) => s.renameReel);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // always up-to-date from Zustand
+  const selected =
+    inventory.find((r) => r.reelId === selectedId) ?? null;
+
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalMode, setModalMode] =
+    useState<"actions" | "confirmRelease">("actions");
+
   const [renameVisible, setRenameVisible] = useState(false);
   const [renameText, setRenameText] = useState("");
-  const [reelToRename, setReelToRename] = useState<BugReel | null>(null);
 
-  const reelCount = bugReels.length;
-  const inventorySlots = Array.from({ length: INVENTORY_SIZE }, (_, i) => bugReels[i] ?? null);
+  const slots = Array.from(
+    { length: INVENTORY_SIZE },
+    (_, i) => inventory[i] ?? null
+  );
 
-  const handleSelectReel = (reel: BugReel | null) => {
-    if (!reel) return;
-    setSelectedReel(reel);
+  const handleSelect = (item: InventoryItem | null) => {
+    if (!item) return;
+    setSelectedId(item.reelId);
     setModalVisible(true);
   };
 
-  const handleConfirmRelease = () => {
-    if (!selectedReel) return;
-    removeReel(selectedReel.id);
+  const handleRelease = () => {
+    if (!selected) return;
+    releaseReel(selected.reelId);
     setModalVisible(false);
-    setModalMode("actions");
-    router.push({ pathname: "../release/wild-post", params: {} });
   };
 
-  const handleRenamePress = (reel: BugReel) => {
-    setReelToRename(reel);
-    setRenameText(reel.name);
+  const handleRename = () => {
+    if (!selected) return;
+    setRenameText(selected.name);
     setRenameVisible(true);
   };
 
-  const handleConfirmRename = () => {
-    if (!reelToRename) return;
-    nameReel(reelToRename.id, renameText);
-    setSelectedReel((prev) => (prev ? { ...prev, name: renameText } : null));
+  const confirmRename = () => {
+    if (!selected) return;
+    renameReel(selected.reelId, renameText);
     setRenameVisible(false);
-    setReelToRename(null);
   };
 
   const handleWatch = () => {
-    if (!selectedReel) return;
+    if (!selected) return;
+
+    const reelData = REELS_DATABASE[selected.reelId];
+
+    router.push({
+      pathname: "/reel/view",
+      params: {
+        reelId: selected.reelId,
+        name: selected.name,
+        video: JSON.stringify(reelData.video),
+      },
+    });
+
     setModalVisible(false);
-    setModalMode("actions");
-    router.push({ pathname: "/reel/view", params: { reelId: selectedReel.id, name: selectedReel.name, video: JSON.stringify(selectedReel.videoUrl) } });
   };
 
-  const renderItem = ({ item }: { item: BugReel | null }) => {
+  const renderItem = ({ item }: { item: InventoryItem | null }) => {
     const isEmpty = item === null;
     return (
       <TouchableOpacity
         style={styles.slot}
-        onPress={() => item && handleSelectReel(item)}
+        onPress={() => item && handleSelect(item)}
         disabled={!item}
       >
         <View style={styles.frameContainer}>
           {isEmpty ? (
             <Image
-              source={emptyReelFrames[Math.floor(Math.random() * NUM_EMPTY_FRAMES)]}
+              source={
+                emptyReelFrames[
+                  Math.floor(Math.random() * NUM_EMPTY_FRAMES)
+                ]
+              }
               style={styles.frameImage}
               resizeMode="contain"
             />
           ) : (
-            <>
-              <Image
-                source={bugReelFrames[Math.floor(Math.random() * NUM_BUGREEL_FRAMES)]}
-                style={styles.frameImage}
-                resizeMode="contain"
-              />
-              <Image
-                source={item.thumbnail}
-                style={styles.thumbnailOverlay}
-                resizeMode="cover"
-              />
-            </>
+            <Image
+              source={
+                bugReelFrames[
+                  Math.floor(Math.random() * NUM_BUGREEL_FRAMES)
+                ]
+              }
+              style={styles.frameImage}
+              resizeMode="contain"
+            />
           )}
         </View>
-        {!isEmpty && <Text style={styles.reelName}>{item.name}</Text>}
+
+        {!isEmpty && (
+          <Text style={styles.reelName}>{item.name}</Text>
+        )}
       </TouchableOpacity>
     );
   };
@@ -126,42 +145,50 @@ export default function InventoryScreen() {
           <Text style={styles.title}>Inventory</Text>
         </View>
         <Text style={styles.capacity}>
-          Inventory: {reelCount} / {INVENTORY_SIZE}
+          Inventory: ({inventory.length} / {INVENTORY_SIZE})
         </Text>
       </View>
 
       <FlatList
-        data={inventorySlots}
-        extraData={bugReels}
+        data={slots}
         renderItem={renderItem}
         keyExtractor={(_, index) => `slot-${index}`}
         numColumns={2}
         style={{ flex: 1 }}
       />
 
-      <Modal visible={modalVisible} transparent={true}>
+      {/* MODAL */}
+      <Modal visible={modalVisible} transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {selectedReel && (
+            {selected && (
               <View>
-                <Text style={{ textAlign: "center", fontSize: 30, fontFamily: "Dokdo" }}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 30,
+                    fontFamily: "Dokdo",
+                  }}
+                >
                   Your Bug Reel:
                 </Text>
+
                 <View style={styles.modalFrameContainer}>
                   <Image
                     source={bugReelFrames[0]}
                     style={styles.modalFrame}
                     resizeMode="contain"
                   />
-                  <Image
-                    source={selectedReel.thumbnail}
-                    style={styles.modalThumbnail}
-                    resizeMode="cover"
-                  />
                 </View>
-                <Text style={{ textAlign: "left", fontSize: 20, fontFamily: "Agdasima" }}>
-                  Name: {selectedReel.name}
-                  {"\n"}Caught: {new Date(selectedReel.caughtAt).toLocaleDateString()}
+
+                <Text
+                  style={{
+                    textAlign: "left",
+                    fontSize: 20,
+                    fontFamily: "Agdasima",
+                  }}
+                >
+                  Name: {selected.name}
                 </Text>
               </View>
             )}
@@ -170,36 +197,76 @@ export default function InventoryScreen() {
               <View style={styles.buttonRow}>
                 <TouchableOpacity
                   style={styles.greyButton}
-                  onPress={() => setModalMode("confirmRelease")}
+                  onPress={() =>
+                    setModalMode("confirmRelease")
+                  }
                 >
-                  <Text style={styles.buttonText}>Release</Text>
+                  <Text style={styles.buttonText}>
+                    Release
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.greyButton} onPress={handleWatch}>
-                  <Text style={styles.buttonText}>Watch</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity
                   style={styles.greyButton}
-                  onPress={() => handleRenamePress(selectedReel!)}
+                  onPress={handleWatch}
                 >
-                  <Text style={styles.buttonText}>Rename</Text>
+                  <Text style={styles.buttonText}>
+                    Watch
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.greyButton}
+                  onPress={handleRename}
+                >
+                  <Text style={styles.buttonText}>
+                    Rename
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
 
             {modalMode === "confirmRelease" && (
-              <View style={{ alignItems: "center", marginTop: 20 }}>
-                <Text style={{ textAlign: "center", fontSize: 18, marginBottom: 10 }}>
+              <View
+                style={{
+                  alignItems: "center",
+                  marginTop: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 18,
+                    marginBottom: 10,
+                  }}
+                >
                   Are you sure you want to release this bug reel?
                 </Text>
-                <View style={{ flexDirection: "row", gap: 20 }}>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 20,
+                  }}
+                >
                   <TouchableOpacity
                     style={styles.greyButton}
-                    onPress={() => setModalMode("actions")}
+                    onPress={() =>
+                      setModalMode("actions")
+                    }
                   >
-                    <Text style={styles.buttonText}>Cancel</Text>
+                    <Text style={styles.buttonText}>
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.blueButton} onPress={handleConfirmRelease}>
-                    <Text style={styles.buttonText}>Release</Text>
+
+                  <TouchableOpacity
+                    style={styles.blueButton}
+                    onPress={handleRelease}
+                  >
+                    <Text style={styles.buttonText}>
+                      Release
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -207,7 +274,10 @@ export default function InventoryScreen() {
 
             <TouchableOpacity
               style={styles.closeX}
-              onPress={() => { setModalVisible(false); setModalMode("actions"); }}
+              onPress={() => {
+                setModalVisible(false);
+                setModalMode("actions");
+              }}
             >
               <Image
                 source={require("../../assets/images/close-button.png")}
@@ -218,22 +288,46 @@ export default function InventoryScreen() {
         </View>
       </Modal>
 
+      {/* RENAME MODAL */}
       <Modal visible={renameVisible} transparent animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.renameModalContent}>
-            <Text style={{ marginBottom: 10, fontSize: 16 }}>Rename Reel</Text>
+            <Text style={{ marginBottom: 10, fontSize: 16 }}>
+              Rename Reel
+            </Text>
+
             <TextInput
               value={renameText}
               onChangeText={setRenameText}
               autoFocus
-              style={{ borderWidth: 1, width: "100%", padding: 10, marginBottom: 10, borderRadius: 8 }}
+              style={{
+                borderWidth: 1,
+                width: "100%",
+                padding: 10,
+                marginBottom: 10,
+                borderRadius: 8,
+              }}
             />
+
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.greyButton} onPress={() => setRenameVisible(false)}>
-                <Text style={styles.buttonText}>Cancel</Text>
+              <TouchableOpacity
+                style={styles.greyButton}
+                onPress={() =>
+                  setRenameVisible(false)
+                }
+              >
+                <Text style={styles.buttonText}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.blueButton} onPress={handleConfirmRename}>
-                <Text style={styles.buttonText}>Confirm</Text>
+
+              <TouchableOpacity
+                style={styles.blueButton}
+                onPress={confirmRename}
+              >
+                <Text style={styles.buttonText}>
+                  Confirm
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -248,14 +342,12 @@ const SLOT_SIZE = 150;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: "#ffffff",
   },
   headerContainer: {
     backgroundColor: "#9DEBFF",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 12,
     marginBottom: 10,
     alignItems: "center",
   },

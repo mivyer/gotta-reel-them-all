@@ -1,99 +1,199 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { doc, getDoc } from "firebase/firestore";
+import { DB } from "../services/firebase";
 
-export type BugReel = {
-  id: string;
-  name: string;
-  thumbnail: any;
-  videoUrl: any;
-  caughtAt: number;
+/**
+ * ------------------------
+ * TYPES
+ * ------------------------
+ */
+
+export type InventoryItem = {
+  reelId: string;
+  name: string;    // user-defined name
 };
 
-// Alias so existing imports of `Reel` still compile
-export type Reel = BugReel;
-
 export interface Friend {
-  id: string;
+  uid: string;
   username: string;
-  reels: BugReel[];
 }
 
-export const REEL_VIDEOS = [
-  require('../assets/reels/Video-719.mp4'),
-  require('../assets/reels/Video-700.mp4'),
-  require('../assets/reels/Video-853.mp4'),
-  require('../assets/reels/Video-148.mp4'),
-  require('../assets/reels/RX-side-effects-Elle-Cordova-1080p.mp4'),
-  require('../assets/reels/Alysa-Liu-edit-alysaliu-figureskating-edit-Inaraeditz-720p.mp4'),
-  require('../assets/reels/I-feel-like-90-of-moves-are-invented-by-accident-gymnastics-sports-fails-fail-gymnast-ncaa-Ian-Gunther-1080p.mp4'),
-  require('../assets/reels/One-of-my-faves-and-still-so-true-to-this-day-funnyshorts-laugh-comedy-dancing-millenials-Meaghan-Ranee-720p.mp4'),
-];
+interface UserData {
+  uid: string;
+  username: string;
+}
 
-const PLACEHOLDER = require('../assets/images/thumbnail-placeholder.png');
+/**
+ * ------------------------
+ * STATE
+ * ------------------------
+ */
 
 interface GameState {
-  reels: BugReel[];
+  // auth
+  authUser: any | null;
+  user: UserData | null;
+
+  // core game data
+  inventory: InventoryItem[];
   friends: Friend[];
+
   checkpointPending: boolean;
-  addReel: (reel: BugReel) => void;
-  removeReel: (id: string) => void;
-  nameReel: (id: string, name: string) => void;
+
+  // ------------------------
+  // AUTH
+  // ------------------------
+  setAuthUser: (user: any) => void;
+  setUser: (user: UserData) => void;
+  clearUser: () => void;
+
+  // ------------------------
+  // INVENTORY (REELS)
+  // ------------------------
+  setInventory: (inv: InventoryItem[]) => void;
+
+  addReel: (reelId: string) => void;
+  releaseReel: (reelId: string) => void;
+  renameReel: (reelId: string, name: string) => void;
+
+  // ------------------------
+  // FRIENDS
+  // ------------------------
   addFriend: (friend: Friend) => void;
+
+  addFriendByUsername: (username: string) => Promise<void>;
+
+  // ------------------------
+  // UI / GAME STATE
+  // ------------------------
   setCheckpoint: (val: boolean) => void;
 }
 
+/**
+ * ------------------------
+ * STORE
+ * ------------------------
+ */
 
-export const useGameStore = create<GameState>((set) => ({
-  reels: [
-    {
-      id: '1',
-      name: 'controlled ant',
-      thumbnail: PLACEHOLDER,
-      videoUrl: require('../assets/reels/controlled_ant.mp4'),
-      color: 'blue',
-      caughtAt: Date.now() - 86400000,
-    },
-    {
-      id: '2',
-      name: 'gambling dog',
-      thumbnail: PLACEHOLDER,
-      videoUrl: require('../assets/reels/gambling_dog.mp4'),
-      color: 'pink',
-      caughtAt: Date.now() - 43200000,
-    },
-    {
-      id: '3',
-      name: 'slomo hamster',
-      thumbnail: PLACEHOLDER,
-      videoUrl: require('../assets/reels/slomo_hamster.mp4'),
-      color: 'blue',
-      caughtAt: Date.now() - 172800000,
-    },
-  ],
-  friends: [
-    {
-      id: 'f1',
-      username: 'OceanAngler99',
-      reels: [
-        { id: 'r-demo-1', name: 'Splashy', thumbnail: PLACEHOLDER, videoUrl: REEL_VIDEOS[0], color: 'blue', caughtAt: Date.now() - 86400000 },
-        { id: 'r-demo-2', name: 'Bubblegum', thumbnail: PLACEHOLDER, videoUrl: REEL_VIDEOS[1], color: 'pink', caughtAt: Date.now() - 43200000 },
+export const useGameStore = create<GameState>((set, get) => ({
+  // ------------------------
+  // AUTH
+  // ------------------------
+  authUser: null,
+  user: null,
+
+  setAuthUser: (user) => set({ authUser: user }),
+
+  setUser: (user) => set({ user }),
+
+  clearUser: () =>
+    set({
+      authUser: null,
+      user: null,
+      inventory: [],
+      friends: [],
+      checkpointPending: false,
+    }),
+
+  // ------------------------
+  // INVENTORY
+  // ------------------------
+  inventory: [],
+
+  setInventory: (inv) => set({ inventory: inv }),
+
+  addReel: (reelId) => {
+    const current = get().inventory;
+
+    if (current.some((r) => r.reelId === reelId)) return;
+
+    set({
+      inventory: [
+        ...current,
+        {
+          reelId,
+          name: "Unnamed Reel",
+        },
       ],
-    },
-    {
-      id: 'f2',
-      username: 'DeepSeaDiver',
-      reels: [
-        { id: 'r-demo-3', name: 'Cobalt', thumbnail: PLACEHOLDER, videoUrl: REEL_VIDEOS[2], color: 'blue', caughtAt: Date.now() - 172800000 },
-      ],
-    },
-  ],
+    });
+  },
+
+  releaseReel: (reelId) => {
+    set((state) => ({
+      inventory: state.inventory.filter((r) => r.reelId !== reelId),
+    }));
+  },
+
+  renameReel: (reelId, name) => {
+    set((state) => ({
+      inventory: state.inventory.map((r) =>
+        r.reelId === reelId ? { ...r, name } : r
+      ),
+    }));
+  },
+
+  // ------------------------
+  // FRIENDS (LOCAL STATE)
+  // ------------------------
+  friends: [],
+
+  addFriend: (friend) =>
+    set((state) => {
+      // prevent duplicates
+      const exists = state.friends.some((f) => f.uid === friend.uid);
+      if (exists) return state;
+
+      return {
+        friends: [...state.friends, friend],
+      };
+    }),
+
+  /**
+   *  search + add friend by username
+   */
+  addFriendByUsername: async (username: string) => {
+    try {
+      // 1. lookup username → uid
+      const snap = await getDoc(doc(DB, "usernames", username));
+
+      if (!snap.exists()) {
+        console.log("User not found");
+        return;
+      }
+
+      const uid = snap.data().uid;
+
+      // 2. fetch user profile
+      const userSnap = await getDoc(doc(DB, "users", uid));
+
+      if (!userSnap.exists()) return;
+
+      const data = userSnap.data();
+
+      // 3. add to store
+      set((state) => {
+        const alreadyFriend = state.friends.some((f) => f.uid === uid);
+        if (alreadyFriend) return state;
+
+        return {
+          friends: [
+            ...state.friends,
+            {
+              uid,
+              username: data.username,
+            },
+          ],
+        };
+      });
+    } catch (err) {
+      console.log("addFriendByUsername error:", err);
+    }
+  },
+
+  // ------------------------
+  // GAME STATE
+  // ------------------------
   checkpointPending: false,
 
-  addReel: (reel) => set((state) => ({ reels: [...state.reels, reel] })),
-  removeReel: (id) => set((state) => ({ reels: state.reels.filter((r) => r.id !== id) })),
-  nameReel: (id, name) =>
-    set((state) => ({
-      reels: state.reels.map((r) => (r.id === id ? { ...r, name } : r)),
-    })),
-  addFriend: (friend) => set((state) => ({ friends: [...state.friends, friend] })),
   setCheckpoint: (val) => set({ checkpointPending: val }),
 }));

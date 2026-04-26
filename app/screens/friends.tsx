@@ -11,16 +11,30 @@ import { useGameStore, Friend } from '../../store/useGameStore';
 
 const MAX_FRIENDS = 25;
 
-function FriendSlot({ friend, onPress }: { friend: Friend; onPress: () => void }) {
-  const isNew = !friend.reels || friend.reels.length === 0;
+function FriendSlot({
+  friend,
+  onPress,
+}: {
+  friend: Friend;
+  onPress: () => void;
+}) {
   return (
-    <TouchableOpacity style={styles.friendSlot} onPress={onPress} activeOpacity={0.8}>
-      <View style={[styles.friendIcon, { backgroundColor: isNew ? '#ff7ac1' : '#82d840' }]}>
+    <TouchableOpacity
+      style={styles.friendSlot}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      {/* simple avatar */}
+      <View style={styles.friendIcon}>
         <View style={styles.friendIconHead} />
         <View style={styles.friendIconBody} />
       </View>
+
       <View style={styles.friendShadow} />
-      <Text style={styles.friendName} numberOfLines={1}>{friend.username}</Text>
+
+      <Text style={styles.friendName} numberOfLines={1}>
+        {friend.username}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -38,35 +52,52 @@ export default function FriendsScreen() {
   const router = useRouter();
   const friends = useGameStore((s) => s.friends);
 
-  const slots = Array.from({ length: Math.max(friends.length + 2, 6) }, (_, i) => friends[i] ?? null);
+  const slots = Array.from(
+    { length: Math.max(friends.length + 2, 6) },
+    (_, i) => friends[i] ?? null
+  );
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(tabs)')}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/(tabs)')}
+        >
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
+
         <Text style={styles.headerTitle}>FRIENDS</Text>
+
         <View style={styles.headerBottom}>
-          <View style={styles.capacityRow}>
-            <Text style={styles.capacityText}>Capacity: {friends.length} / {MAX_FRIENDS}</Text>
-          </View>
-          <TouchableOpacity style={styles.addFriendButton} onPress={() => router.push('/friends/request')}>
+          <Text style={styles.capacityText}>
+            Capacity: {friends.length} / {MAX_FRIENDS}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.addFriendButton}
+            onPress={() => router.push('/friends/request')}
+          >
             <Text style={styles.addFriendText}>Add Friend</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Friend list */}
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      {/* FRIEND GRID */}
+      <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.friendsGrid}>
           {slots.map((friend, i) =>
             friend ? (
               <FriendSlot
-                key={friend.id}
+                key={friend.uid}
                 friend={friend}
-                onPress={() => router.push({ pathname: '/friends/detail', params: { friendId: friend.id } })}
+                onPress={() =>
+                  router.push({
+                    pathname: '/friends/detail',
+                    params: { friendId: friend.uid },
+                  })
+                }
               />
             ) : (
               <EmptyFriendSlot key={`empty-${i}`} />
@@ -77,9 +108,6 @@ export default function FriendsScreen() {
         {friends.length === 0 && (
           <View style={styles.emptyHint}>
             <Text style={styles.emptyHintText}>No friends yet!</Text>
-            <TouchableOpacity style={styles.addButton} onPress={() => router.push('/friends/request')}>
-              <Text style={styles.addButtonText}>Send Friend Request</Text>
-            </TouchableOpacity>
           </View>
         )}
       </ScrollView>

@@ -12,72 +12,91 @@ import { useGameStore } from '../../store/useGameStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const reels = useGameStore((s) => s.reels);
+
+  const inventory = useGameStore((s) => s.inventory);
   const friends = useGameStore((s) => s.friends);
+  const user = useGameStore((s) => s.user);
 
   const stepCount = 2500;
+
+  const namedReels = inventory.filter(
+    (r) => r.name !== 'Unnamed Reel :('
+  );
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(tabs)')}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/screens')}
+        >
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
+
         <Text style={styles.headerTitle}>PROFILE</Text>
+
         <View style={styles.capacityRow}>
-          <Text style={styles.capacityText}>Friends: {friends.length}/25</Text>
+          <Text style={styles.capacityText}>
+            Friends: {friends.length}/25
+          </Text>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Profile avatar — Figma hand-drawn character */}
+        {/* Avatar */}
         <View style={styles.avatarSection}>
           <Image
             source={require('../../assets/figma/profile-icon-large.png')}
             style={styles.avatarImg}
             resizeMode="contain"
           />
-          {/* Light blue glow under avatar, matching Figma */}
+
           <View style={styles.avatarGlow} />
-          <Text style={styles.username}>user_12</Text>
+
+          {/* sername */}
+          <Text style={styles.username}>
+            {user?.username ?? 'No Username'}
+          </Text>
         </View>
 
-        {/* Steps section */}
+        {/* Steps */}
         <View style={styles.stepsSection}>
           <Text style={styles.stepsLabel}>TOTAL STEPS TAKEN</Text>
-          <Text style={styles.stepsNumber}>{stepCount.toLocaleString()}</Text>
+          <Text style={styles.stepsNumber}>
+            {stepCount.toLocaleString()}
+          </Text>
           <Text style={styles.stepsUnit}>steps</Text>
         </View>
 
-        {/* Stats row */}
+        {/* Stats */}
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{reels.length}</Text>
+            <Text style={styles.statValue}>
+              {inventory.length}
+            </Text>
             <Text style={styles.statLabel}>Total Reels</Text>
           </View>
-          {/* <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: '#9cebff' }]}>
-              {reels.filter((r) => r.color === 'blue').length}
-            </Text>
-            <Text style={styles.statLabel}>Blue Reels</Text>
-          </View>
+
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: '#ff7ac1' }]}>
-              {reels.filter((r) => r.color === 'pink').length}
+            <Text style={styles.statValue}>
+              {namedReels.length}
             </Text>
-            <Text style={styles.statLabel}>Pink Reels</Text>
-          </View> */}
+            <Text style={styles.statLabel}>Named</Text>
+          </View>
         </View>
 
         {/* Named reels */}
-        {reels.filter((r) => r.name !== 'Unknown Reel').length > 0 && (
+        {namedReels.length > 0 && (
           <View style={styles.namedSection}>
             <Text style={styles.sectionTitle}>Named Reels</Text>
-            {reels.filter((r) => r.name !== 'Unknown Reel').map((reel) => (
-              <View key={reel.id} style={styles.namedRow}>
-                <View style={[styles.namedDot, { backgroundColor: '#9cebff'}]} />
-                <Text style={styles.namedText}>{reel.name}</Text>
+
+            {namedReels.map((reel) => (
+              <View key={reel.reelId} style={styles.namedRow}>
+                <View style={styles.namedDot} />
+                <Text style={styles.namedText}>
+                  {reel.name}
+                </Text>
               </View>
             ))}
           </View>

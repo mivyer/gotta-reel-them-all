@@ -20,13 +20,13 @@ export default function NamedPostReleaseScreen() {
 
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => router.replace('/(tabs)/inventory')}
+          onPress={() => router.replace('/screens/inventory')}
         >
           <Text style={styles.btnText}>Back to Inventory</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.homeBtn}
-          onPress={() => router.replace('/(tabs)')}
+          onPress={() => router.replace('/screens')}
         >
           <Text style={styles.homeBtnText}>Go Home</Text>
         </TouchableOpacity>
