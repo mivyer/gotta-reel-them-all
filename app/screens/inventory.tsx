@@ -84,14 +84,14 @@ export default function InventoryScreen() {
   const handleWatch = () => {
     if (!selected) return;
 
-    const reelData = REELS_DATABASE[selected.reelId];
-
+    const video = REELS_DATABASE[selected.reelId];
+    
     router.push({
       pathname: "/reel/view",
       params: {
         reelId: selected.reelId,
         name: selected.name,
-        video: JSON.stringify(reelData.video),
+        video: JSON.stringify(video)
       },
     });
 
@@ -111,7 +111,7 @@ export default function InventoryScreen() {
             <Image
               source={
                 emptyReelFrames[
-                  Math.floor(Math.random() * NUM_EMPTY_FRAMES)
+                Math.floor(Math.random() * NUM_EMPTY_FRAMES)
                 ]
               }
               style={styles.frameImage}
@@ -121,7 +121,7 @@ export default function InventoryScreen() {
             <Image
               source={
                 bugReelFrames[
-                  Math.floor(Math.random() * NUM_BUGREEL_FRAMES)
+                Math.floor(Math.random() * NUM_BUGREEL_FRAMES)
                 ]
               }
               style={styles.frameImage}
