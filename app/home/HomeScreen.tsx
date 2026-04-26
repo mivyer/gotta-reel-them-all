@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image, Modal, TouchableOpacity,
-  Animated, Dimensions,
-  Button,
+  Animated, Dimensions, ScrollView,
+  Button, TextInput,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useRouter } from 'expo-router';
@@ -11,17 +11,25 @@ import { NavigationProp } from '@react-navigation/native';
 
 const W = Dimensions.get('window').width;
 const H = Dimensions.get('window').height;
+const CANVAS_H = H * 3;
 
 // ── Checkpoint config ─────────────────────────────────────────────────────────
-const NEXT_CHECKPOINT = 2500; // first reel-catch trigger
-const START_STEPS = 2163; // hardcoded launch value — swap for pedometer later
+var NEXT_CHECKPOINT = 500; // first reel-catch trigger
+const START_STEPS = 0; // hardcoded launch value — swap for pedometer later
 
 // ── Path waypoints (symmetric S-curve) ───────────────────────────────────────
 const WAYPOINTS = [
   { steps: 0, fx: 0.50, fy: 0.97 },
-  { steps: 2500, fx: 0.72, fy: 0.70 },
-  { steps: 3000, fx: 0.28, fy: 0.46 },
-  { steps: 3500, fx: 0.72, fy: 0.10 },
+  { steps: 500, fx: 0.75, fy: 0.87 },
+  { steps: 1000, fx: 0.25, fy: 0.77 },
+  { steps: 1500, fx: 0.75, fy: 0.67 },
+  { steps: 2000, fx: 0.25, fy: 0.57 },
+  { steps: 2500, fx: 0.75, fy: 0.47 },
+  { steps: 3000, fx: 0.25, fy: 0.37 },
+  { steps: 3500, fx: 0.75, fy: 0.27 },
+  { steps: 4000, fx: 0.25, fy: 0.17 },
+  { steps: 4500, fx: 0.75, fy: 0.10 },
+  { steps: 5000, fx: 0.50, fy: 0.03 },
 ];
 const CIRCLES = WAYPOINTS.slice(1);
 
@@ -35,26 +43,34 @@ function getPosForSteps(steps: number): { x: number; y: number } {
       const t = (steps - from.steps) / (to.steps - from.steps);
       return {
         x: lerp(from.fx, to.fx, t) * W,
-        y: lerp(from.fy, to.fy, t) * H,
+        y: lerp(from.fy, to.fy, t) * CANVAS_H,
       };
     }
   }
   const last = WAYPOINTS[WAYPOINTS.length - 1];
-  return { x: last.fx * W, y: last.fy * H };
+  return { x: last.fx * W, y: last.fy * CANVAS_H };
 }
 
 // ── SVG path ──────────────────────────────────────────────────────────────────
-const p = (fx: number, fy: number) => `${fx * W} ${fy * H}`;
+const p = (fx: number, fy: number) => `${fx * W} ${fy * CANVAS_H}`;
 const PATH_D = [
   `M ${p(0.50, 0.97)}`,
-  `C ${p(0.65, 0.93)} ${p(0.78, 0.82)} ${p(0.72, 0.70)}`,
-  `C ${p(0.62, 0.60)} ${p(0.35, 0.52)} ${p(0.28, 0.46)}`,
-  `C ${p(0.20, 0.38)} ${p(0.58, 0.18)} ${p(0.72, 0.10)}`,
+  `C ${p(0.65, 0.94)} ${p(0.80, 0.90)} ${p(0.75, 0.87)}`,
+  `C ${p(0.68, 0.83)} ${p(0.32, 0.80)} ${p(0.25, 0.77)}`,
+  `C ${p(0.18, 0.73)} ${p(0.68, 0.70)} ${p(0.75, 0.67)}`,
+  `C ${p(0.82, 0.63)} ${p(0.32, 0.60)} ${p(0.25, 0.57)}`,
+  `C ${p(0.18, 0.53)} ${p(0.68, 0.50)} ${p(0.75, 0.47)}`,
+  `C ${p(0.82, 0.43)} ${p(0.32, 0.40)} ${p(0.25, 0.37)}`,
+  `C ${p(0.18, 0.33)} ${p(0.68, 0.30)} ${p(0.75, 0.27)}`,
+  `C ${p(0.82, 0.23)} ${p(0.32, 0.20)} ${p(0.25, 0.17)}`,
+  `C ${p(0.18, 0.13)} ${p(0.65, 0.10)} ${p(0.75, 0.10)}`,
+  `C ${p(0.82, 0.09)} ${p(0.55, 0.04)} ${p(0.50, 0.03)}`,
 ].join(' ');
 
 const AVATAR_SIZE = 80;
 const CIRCLE_W = 90;
 const CIRCLE_H = 55;
+
 
 interface RouteProps {
   navigation: NavigationProp<any, any>;
@@ -79,7 +95,27 @@ export default function HomeScreen({ navigation }: RouteProps) {
     ).start();
   }, []);
 
+  const [animating, setAnimating] = useState(false);
+  const [numStepsEntered, setNumStepsEntered] = useState(0);
+  const [inputText, setInputText] = useState('');
+
+  // Add a ref to auto-scroll to the avatar
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Auto-scroll to follow the avatar as it moves
   useEffect(() => {
+    const listenerId = animY.addListener(({ value }) => {
+      scrollRef.current?.scrollTo({
+        y: value - H / 2,  // keep avatar centered vertically
+        animated: false,
+      });
+    });
+    return () => animY.removeListener(listenerId);
+  }, []);
+
+  useEffect(() => {
+    if (!animating) return;
+
     const endPos = getPosForSteps(NEXT_CHECKPOINT);
     const duration = 4000;
     Animated.parallel([
@@ -98,7 +134,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
       });
     }, intervalMs);
     return () => clearInterval(interval);
-  }, []);
+  }, [animating]);
 
   useEffect(() => {
     if (steps >= NEXT_CHECKPOINT) {
@@ -108,73 +144,98 @@ export default function HomeScreen({ navigation }: RouteProps) {
     }
   }, [steps]);
 
+  useEffect(() => {
+  // small timeout lets the ScrollView finish laying out before scrolling
+  const t = setTimeout(() => {
+    scrollRef.current?.scrollToEnd({ animated: false });
+  }, 50);
+  return () => clearTimeout(t);
+}, []);
+
   const handleConfirmCatch = () => {
     setModalVisible(false);
     setModalMode("actions");
-
+    NEXT_CHECKPOINT += 500
     // navigate to catcing screen
     router.replace('/catch');
   };
+
+  const handleStepsEntered = (stepsValue: number) => {
+    setSteps(stepsValue)
+    if (stepsValue >= NEXT_CHECKPOINT) {
+      setAnimating(true)
+    }
+  }
 
   // State to control modal (aka pop-up) visibility
   const [modalMode, setModalMode] = useState<"actions" | "confirmCatch">("actions");
   const [modalVisible, setModalVisible] = useState(false);
 
+
+  const [modal2Visible, setModal2Visible] = useState(false);
+
+
+
   return (
     <View style={styles.container}>
+      <ScrollView
+        ref={scrollRef}
+        style={StyleSheet.absoluteFill}
+        contentContainerStyle={{ width: W, height: CANVAS_H }}
+        scrollEnabled={true}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Squiggly dashed path */}
+        <Svg width={W} height={CANVAS_H} pointerEvents="none">
+          <Path
+            d={PATH_D}
+            stroke="#5a9bb8"
+            strokeWidth={4}
+            strokeDasharray="14 12"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </Svg>
 
-      {/* Squiggly dashed path */}
-      <Svg width={W} height={H} style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Path
-          d={PATH_D}
-          stroke="#5a9bb8"
-          strokeWidth={4}
-          strokeDasharray="14 12"
-          strokeLinecap="round"
-          fill="none"
-        />
-      </Svg>
+        {/* Checkpoint circles */}
+        {CIRCLES.map((cp) => (
+          <View
+            key={cp.steps}
+            style={[styles.circle, {
+              left: cp.fx * W - CIRCLE_W / 2,
+              top: cp.fy * CANVAS_H - CIRCLE_H / 2,
+            }]}
+          >
+            <Text style={styles.circleText}>{cp.steps.toLocaleString()}</Text>
+          </View>
+        ))}
 
-      {/* Checkpoint circles */}
-      {CIRCLES.map((cp) => (
-        <View
-          key={cp.steps}
-          style={[styles.circle, {
-            left: cp.fx * W - CIRCLE_W / 2,
-            top: cp.fy * H - CIRCLE_H / 2,
-          }]}
+        {/* Avatar */}
+        <Animated.View
+          style={[
+            styles.avatarOuter,
+            {
+              left: Animated.subtract(animX, AVATAR_SIZE / 2),
+              top: Animated.subtract(animY, AVATAR_SIZE / 2),
+            },
+          ]}
         >
-          <Text style={styles.circleText}>{cp.steps.toLocaleString()}</Text>
-        </View>
-      ))}
+          <Animated.View style={{ transform: [{ translateY: bounce }] }}>
+            <Image
+              source={require('../../assets/figma/profile-icon-small.png')}
+              style={styles.avatar}
+              resizeMode="contain"
+            />
+            <Text style={styles.flag}>🚩</Text>
+          </Animated.View>
+        </Animated.View>
+      </ScrollView>
 
       {/* Step count */}
-      <View style={styles.stepBlock} pointerEvents="none">
+      <View style={[styles.stepBlock, { pointerEvents: 'none' }]}>
         <Text style={styles.stepNumber}>{steps.toLocaleString()}</Text>
         <Text style={styles.stepLabel}>stePs</Text>
       </View>
-
-      {/* Avatar — outer: position; inner: bounce */}
-      <Animated.View
-        style={[
-          styles.avatarOuter,
-          {
-            left: Animated.subtract(animX, AVATAR_SIZE / 2),
-            top: Animated.subtract(animY, AVATAR_SIZE / 2),
-          },
-        ]}
-      >
-        <Animated.View style={{ transform: [{ translateY: bounce }] }}>
-          <Image
-            source={require('../../assets/figma/profile-icon-small.png')}
-            style={styles.avatar}
-            resizeMode="contain"
-          />
-          {/* Flag — non-interactive, marks current position */}
-          <Text style={styles.flag}>🚩</Text>
-        </Animated.View>
-      </Animated.View>
-
 
       {/* POP-UP MODAL FOR CATCH CONFIRMATION */}
       <Modal
@@ -209,13 +270,79 @@ export default function HomeScreen({ navigation }: RouteProps) {
           </View>
         </View>
       </Modal >
-      <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={[{
-        padding: 12,
-        backgroundColor: "#D9D9D9",
-        borderRadius: 8
-      },]}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+
+      {/* Enter Steps Modal*/}
+      <Modal
+        visible={modal2Visible}
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Enter Number of Steps</Text>
+
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 8,
+                padding: 10,
+                width: '80%',
+                fontFamily: 'Dokdo',
+                fontSize: 32,
+                textAlign: 'center',
+                marginVertical: 16,
+              }}
+              keyboardType="number-pad"
+              placeholder="0"
+              value={inputText}
+              onChangeText={(text) => setInputText(text.replace(/[^0-9]/g, ''))} // only allows integers
+            />
+
+            {modalMode === "actions" && (
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.greyButton}
+                  onPress={() => {
+                    setModal2Visible(false);
+                    setInputText(''); // reset input on cancel
+                  }}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.blueButton}
+                  onPress={() => {
+                    const parsed = parseInt(inputText, 10);
+                    if (!isNaN(parsed)) {
+                      console.log(parsed)
+                      setNumStepsEntered(parsed);
+                      console.log(numStepsEntered)
+                      setModal2Visible(false);
+                      handleStepsEntered(parsed);
+                      setInputText(''); // reset after confirm
+                    }
+                  }}>
+                  <Text style={styles.buttonText}>I pinky promise I walked this much</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      <View style={styles.topBar}>
+        <TouchableOpacity style={styles.topBarBtn} onPress={() => setModal2Visible(true)}>
+          <Text style={styles.startWalkingLabel}>Start Walking</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={styles.topBarBtn}>
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
+
+
+      </View>
+
+
     </View>
 
   );
@@ -356,5 +483,51 @@ const styles = StyleSheet.create({
     top: 20,
     right: 20,
     zIndex: 10,
+  },
+  startWalking: {
+    backgroundColor: 'white',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  startWalkingLabel: {
+    fontFamily: 'Dokdo',
+    fontSize: 16,
+    color: 'black',
+  },
+  logoutBtn: {
+    position: 'absolute',
+    top: 48,
+    right: 16,
+    padding: 12,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
+    zIndex: 10,
+  },
+  topBar: {
+    flexDirection: 'row',
+    gap: 10,
+    position: 'absolute',
+    top: 48,
+    right: 16,
+    zIndex: 10,
+  },
+  topBarBtn: {
+    padding: 12,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });
