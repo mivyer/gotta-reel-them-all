@@ -5,9 +5,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 export default function NamedPostReleaseScreen() {
   const { name, color } = useLocalSearchParams<{ name: string; color: string }>();
   const router = useRouter();
-  const isBlue = color !== 'pink';
-  const bgImage = require('../../assets/figma/post-release-blue.png') | require('../../assets/figma/post-release-pink.png');
 
+  const bgImage =
+    Math.random() > 0.5
+      ? require('../../assets/figma/release-named-blue.png')
+      : require('../../assets/figma/release-named-pink.png');
+      
   return (
     <View style={styles.container}>
       <Image source={bgImage} style={styles.bgImage} resizeMode="cover" />

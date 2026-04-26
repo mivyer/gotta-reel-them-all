@@ -65,7 +65,7 @@ export default function InventoryScreen() {
 
   const handleRelease = () => {
     if (!selected) return;
-    releaseReel(selected.reelId);
+    releaseReel(selected.reelId); // TODO: navigate to release screen/image for 5s, then remove from inventory after animation
     setModalVisible(false);
   };
 
@@ -85,7 +85,7 @@ export default function InventoryScreen() {
     if (!selected) return;
 
     const video = REELS_DATABASE[selected.reelId];
-    
+
     router.push({
       pathname: "/reel/view",
       params: {

@@ -3,8 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useGameStore, Friend } from '../../store/useGameStore';
@@ -24,7 +24,6 @@ function FriendSlot({
       onPress={onPress}
       activeOpacity={0.8}
     >
-      {/* simple avatar */}
       <View style={styles.friendIcon}>
         <View style={styles.friendIconHead} />
         <View style={styles.friendIconBody} />
@@ -52,8 +51,9 @@ export default function FriendsScreen() {
   const router = useRouter();
   const friends = useGameStore((s) => s.friends);
 
+  // Fill up to max capacity
   const slots = Array.from(
-    { length: Math.max(friends.length + 2, 6) },
+    { length: MAX_FRIENDS },
     (_, i) => friends[i] ?? null
   );
 
@@ -63,7 +63,7 @@ export default function FriendsScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.push('/(tabs)')}
+          onPress={() => router.push('/screens')}
         >
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
@@ -84,36 +84,43 @@ export default function FriendsScreen() {
         </View>
       </View>
 
-      {/* FRIEND GRID */}
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.friendsGrid}>
-          {slots.map((friend, i) =>
-            friend ? (
+      {/* GRID */}
+      <FlatList
+        data={slots}
+        keyExtractor={(_, index) => `friend-slot-${index}`}
+        numColumns={NUM_COLUMNS}
+        contentContainerStyle={styles.content}
+        columnWrapperStyle={styles.row}
+        renderItem={({ item }) => {
+          if (item) {
+            return (
               <FriendSlot
-                key={friend.uid}
-                friend={friend}
+                friend={item}
                 onPress={() =>
                   router.push({
                     pathname: '/friends/detail',
-                    params: { friendId: friend.uid },
+                    params: { friendId: item.uid },
                   })
                 }
               />
-            ) : (
-              <EmptyFriendSlot key={`empty-${i}`} />
-            )
-          )}
-        </View>
+            );
+          }
 
-        {friends.length === 0 && (
-          <View style={styles.emptyHint}>
-            <Text style={styles.emptyHintText}>No friends yet!</Text>
-          </View>
-        )}
-      </ScrollView>
+          return <EmptyFriendSlot />;
+        }}
+      />
+
+      {/* EMPTY STATE */}
+      {friends.length === 0 && (
+        <View style={styles.emptyHint}>
+          <Text style={styles.emptyHintText}>No friends yet!</Text>
+        </View>
+      )}
     </View>
   );
 }
+
+const NUM_COLUMNS = 5;
 
 const styles = StyleSheet.create({
   container: {
@@ -189,15 +196,20 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 32,
   },
+
+  row: {
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+
+  friendSlot: {
+    width: "30%",
+    alignItems: "center",
+  },
   friendsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
-  },
-  friendSlot: {
-    width: 80,
-    alignItems: 'center',
-    gap: 4,
   },
   friendIcon: {
     width: 60,
@@ -233,9 +245,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyFriendSlot: {
-    width: 80,
-    alignItems: 'center',
-    gap: 4,
+    width: "30%",
+    alignItems: "center",
   },
   emptyFriendIcon: {
     width: 60,
@@ -246,6 +257,7 @@ const styles = StyleSheet.create({
   emptyFriendShadow: {
     width: 60,
     height: 10,
+    marginTop: 12,
     borderRadius: 5,
     backgroundColor: '#e8e8e8',
   },
