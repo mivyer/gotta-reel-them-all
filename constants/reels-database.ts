@@ -15,7 +15,16 @@ export const REELS_DATABASE: Record<string, any> = {
     "13": require("../reels/13.mp4"),
     "14": require("../reels/14.mp4"),
     "15": require("../reels/15.mp4"),
-    "16": require("../reels/16.mp4")
+    "16": require("../reels/16.mp4"),
+    "17": require("../reels/17.mp4"),
+    "18": require("../reels/18.mp4"),
+    "19": require("../reels/19.mp4"),
+    "20": require("../reels/20.mp4"),
+    "21": require("../reels/21.mp4"),
+    "22": require("../reels/22.mp4"),
+    "23": require("../reels/23.mp4"),
+    "24": require("../reels/24.mp4"),
+    "25": require("../reels/25.mp4")
 };
 
 export const NUM_REELS = 17;

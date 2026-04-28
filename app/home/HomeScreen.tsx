@@ -113,36 +113,42 @@ export default function HomeScreen({ navigation }: RouteProps) {
     return () => animY.removeListener(listenerId);
   }, []);
 
-  useEffect(() => {
-    if (!animating) return;
+useEffect(() => {
+  if (!animating) return;
 
-    const endPos = getPosForSteps(NEXT_CHECKPOINT);
-    const duration = 4000;
-    Animated.parallel([
-      Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
-      Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
-    ]).start();
+  const endPos = getPosForSteps(NEXT_CHECKPOINT);
+  const duration = 4000;
 
-    const totalSteps = NEXT_CHECKPOINT - START_STEPS;
-    const intervalMs = 80;
-    const stepsPerTick = Math.ceil(totalSteps / (duration / intervalMs));
-    const interval = setInterval(() => {
-      setSteps(prev => {
-        const next = Math.min(prev + stepsPerTick, NEXT_CHECKPOINT);
-        if (next >= NEXT_CHECKPOINT) clearInterval(interval);
-        return next;
-      });
-    }, intervalMs);
-    return () => clearInterval(interval);
-  }, [animating]);
-
-  useEffect(() => {
-    if (steps >= NEXT_CHECKPOINT) {
-      setModalVisible(true); // Open popup modal
-      // const t = setTimeout(() => router.push('./catching-screen'), 600);
-      //return () => clearTimeout(t); TODO
+  Animated.parallel([
+    Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
+    Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
+  ]).start(({ finished }) => {
+    if (finished) {
+      setAnimating(false);
+      setModalVisible(true); // ← open modal only after animation completes
     }
-  }, [steps]);
+  });
+
+  const totalSteps = NEXT_CHECKPOINT - START_STEPS;
+  const intervalMs = 80;
+  const stepsPerTick = Math.ceil(totalSteps / (duration / intervalMs));
+  const interval = setInterval(() => {
+    setSteps(prev => {
+      const next = Math.min(prev + stepsPerTick, NEXT_CHECKPOINT);
+      if (next >= NEXT_CHECKPOINT) clearInterval(interval);
+      return next;
+    });
+  }, intervalMs);
+  return () => clearInterval(interval);
+}, [animating]);
+
+  // useEffect(() => {
+  //   if (steps >= NEXT_CHECKPOINT) {
+  //     setModalVisible(true); // Open popup modal
+  //     // const t = setTimeout(() => router.push('./catching-screen'), 600);
+  //     //return () => clearTimeout(t); TODO
+  //   }
+  // }, [steps]);
 
   useEffect(() => {
   // small timeout lets the ScrollView finish laying out before scrolling
