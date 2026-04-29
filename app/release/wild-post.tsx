@@ -22,9 +22,15 @@ export default function WildPostReleaseScreen() {
 
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => router.replace('/catch/index')}
+          onPress={() => router.replace('/catch')}
         >
           <Text style={styles.btnText}>Back to Catching!</Text>
+        </TouchableOpacity>
+          <TouchableOpacity
+          style={styles.btn}
+          onPress={() => router.replace('/home/HomeScreen')}
+        >
+          <Text style={styles.btnText}>I'm done. Let me go home.</Text>
         </TouchableOpacity>
 
       </View>
