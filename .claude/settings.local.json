@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git branch *)",
+      "Bash(git pull *)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
