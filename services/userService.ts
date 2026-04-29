@@ -19,5 +19,6 @@ export async function findUserByUsername(username: string) {
   return {
     id: doc.id, 
     username: doc.data().username,
+    friends: doc.data().friends || [],
   };
 }

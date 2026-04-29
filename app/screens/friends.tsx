@@ -116,7 +116,10 @@ export default function FriendsScreen() {
                 onPress={() =>
                   router.push({
                     pathname: '/friends/detail',
-                    params: { friendId: item.uid },
+                    params: {
+                      friendId: item.uid,
+                      friendUsername: item.username
+                    },
                   })
                 }
               />

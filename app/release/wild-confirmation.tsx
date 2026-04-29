@@ -154,8 +154,7 @@ const styles = StyleSheet.create({
   cancelBtn: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    borderRadius: 30,
-    paddingVertical: 16,
+       paddingVertical: 16,
     alignItems: 'center',
   },
 
@@ -167,7 +166,6 @@ const styles = StyleSheet.create({
 
   releaseBtn: {
     flex: 1,
-    borderRadius: 30,
     paddingVertical: 16,
     alignItems: 'center',
   },

@@ -72,7 +72,7 @@ interface GameState {
   // ------------------------
   setFriends: (friends: Friend[]) => void;
   addFriend: (friend: Friend) => void;
-  addFriendByUsername: (username: string) => Promise<void>;
+
 
   // ------------------------
   // INCOMING
@@ -163,35 +163,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (authUser?.uid) saveToFirestore(authUser.uid, { friends: updated });
   },
 
-  addFriendByUsername: async (username: string) => {
-    try {
-      const normalized = username.toLowerCase().trim();
-
-      const snap = await getDoc(doc(DB, "usernames", normalized));
-
-      if (!snap.exists()) {
-        console.log("User not found");
-        return;
-      }
-
-      const uid = snap.data().uid;
-
-      const userSnap = await getDoc(doc(DB, "users", uid));
-
-      if (!userSnap.exists()) return;
-
-      const data = userSnap.data();
-
-      const { friends, user: authUser } = get();
-      if (friends.some((f) => f.uid === uid)) return;
-      const updated = [...friends, { uid, username: data.username }];
-      set({ friends: updated });
-      if (authUser?.uid) saveToFirestore(authUser.uid, { friends: updated });
-    } catch (err) {
-      console.log("addFriendByUsername error:", err);
-    }
-  },
-
+ 
   // ------------------------
   // INCOMING
   // ------------------------
