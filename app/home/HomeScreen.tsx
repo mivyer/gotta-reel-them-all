@@ -9,6 +9,8 @@ import { useRouter } from 'expo-router';
 import { FIREBASE_AUTH } from '../../services/firebase';
 import { NavigationProp } from '@react-navigation/native';
 import { useGameStore } from '../../store/useGameStore';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 const W = Dimensions.get('window').width;
 const H = Dimensions.get('window').height;
@@ -194,6 +196,8 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
 
   return (
+    <LinearGradient colors={['#22c0ff', '#b9eeff']} style={styles.container}>
+    
     <View style={styles.container}>
       <ScrollView
         ref={scrollRef}
@@ -304,7 +308,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
                 borderRadius: 8,
                 padding: 10,
                 width: '80%',
-                fontFamily: 'Dokdo',
+                fontFamily: 'Agdasima',
                 fontSize: 32,
                 textAlign: 'center',
                 marginVertical: 16,
@@ -339,7 +343,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
                       setInputText(''); // reset after confirm
                     }
                   }}>
-                  <Text style={styles.buttonText}>I pinky promise I walked this much</Text>
+                  <Text style={styles.buttonText}>I pinky promise I walked this much...</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -353,7 +357,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={styles.topBarBtn}>
-          <Text style={styles.buttonText}>Logout</Text>
+          <Text style={styles.startWalkingLabel}>Logout</Text>
         </TouchableOpacity>
 
 
@@ -361,12 +365,12 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
 
     </View>
-
+</LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#9cebff' },
+  container: { flex: 1},
 
   stepBlock: {
     position: 'absolute',
@@ -440,18 +444,19 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
+    marginHorizontal:-100,
     justifyContent: "center", // Center modal vertically
     alignItems: "center", // Center horizontally
     backgroundColor: "rgba(0,0,0,0.5)" // Dark overlay
   },
   modalContent: {
-    paddingTop: 60,
+    paddingTop: 100,
     width: "50%",
     height: "80%",
     backgroundColor: "white",
     alignItems: "center",
-    padding: 20,
-    borderRadius: 3
+    padding: -2,
+    borderRadius: 0
   },
   modalTitle: {
     fontFamily: "Dokdo",
@@ -514,8 +519,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   startWalkingLabel: {
-    fontFamily: 'Dokdo',
+    fontFamily: 'Agdasima',
     fontSize: 16,
+    textAlign: "center",
     color: 'black',
   },
   logoutBtn: {

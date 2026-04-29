@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { DB } from "../services/firebase";
+import { IncomingSlot } from "../services/tradeService";
 
 const saveToFirestore = (uid: string, data: Partial<{ inventory: InventoryItem[]; friends: Friend[] }>) => {
   updateDoc(doc(DB, "users", uid), data).catch((e) => console.log("Firestore save error:", e));
@@ -17,6 +18,8 @@ export type InventoryItem = {
   name: string;
 };
 
+export type { IncomingSlot };
+
 export interface Friend {
   uid: string;
   username: string;
@@ -26,6 +29,9 @@ interface UserData {
   uid: string;
   username: string;
 }
+
+// incoming map: key = friend index (as string), value = slot or null
+export type IncomingMap = Record<string, IncomingSlot | null>;
 
 /**
  * ------------------------
@@ -41,6 +47,7 @@ interface GameState {
   // core game data
   inventory: InventoryItem[];
   friends: Friend[];
+  incoming: IncomingMap;
   steps: number;
 
   checkpointPending: boolean;
@@ -66,6 +73,11 @@ interface GameState {
   setFriends: (friends: Friend[]) => void;
   addFriend: (friend: Friend) => void;
   addFriendByUsername: (username: string) => Promise<void>;
+
+  // ------------------------
+  // INCOMING
+  // ------------------------
+  setIncoming: (incoming: IncomingMap) => void;
 
   // ------------------------
   // STEPS
@@ -102,6 +114,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       user: null,
       inventory: [],
       friends: [],
+      incoming: {},
       steps: 0,
       checkpointPending: false,
     }),
@@ -154,7 +167,6 @@ export const useGameStore = create<GameState>((set, get) => ({
     try {
       const normalized = username.toLowerCase().trim();
 
-      // lookup username -> uid
       const snap = await getDoc(doc(DB, "usernames", normalized));
 
       if (!snap.exists()) {
@@ -164,7 +176,6 @@ export const useGameStore = create<GameState>((set, get) => ({
 
       const uid = snap.data().uid;
 
-      // fetch user profile
       const userSnap = await getDoc(doc(DB, "users", uid));
 
       if (!userSnap.exists()) return;
@@ -180,6 +191,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       console.log("addFriendByUsername error:", err);
     }
   },
+
+  // ------------------------
+  // INCOMING
+  // ------------------------
+  incoming: {},
+
+  setIncoming: (incoming) => set({ incoming }),
 
   // ------------------------
   // STEPS
