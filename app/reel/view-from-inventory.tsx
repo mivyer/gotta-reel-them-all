@@ -15,8 +15,7 @@ export default function WatchScreen() {
     router.replace({
       pathname: "/screens/inventory",
       params: {
-        reelId: reelId as string,
-        openMode: "actions", 
+        reelId: reelId
       },
     });
   };
