@@ -49,7 +49,7 @@ export default function CatchPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const [netPos, setNetPos] = useState({ x: width * 0.5, y: height * 0.5 });
+  const [netPos, setNetPos] = useState({ x: width / 5, y: height * 0.5 });
   const bugsRef = useRef(bugs);
   bugsRef.current = bugs;
 
