@@ -17,7 +17,7 @@ export default function ProfileScreen() {
   const friends = useGameStore((s) => s.friends);
   const user = useGameStore((s) => s.user);
 
-  const stepCount = 2500;
+  const stepCount = useGameStore((s) => s.steps);
 
   const namedReels = inventory.filter(
     (r) => r.name !== 'Unnamed Reel :('
@@ -54,10 +54,13 @@ export default function ProfileScreen() {
 
           <View style={styles.avatarGlow} />
 
-          {/* sername */}
-          <Text style={styles.username}>
-            {user?.username ?? 'No Username'}
-          </Text>
+          <TouchableOpacity
+            onPress={() => router.push('/(auth)/set-username')}
+          >
+            <Text style={styles.username}>
+              {user?.username ?? 'No Username'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Steps */}

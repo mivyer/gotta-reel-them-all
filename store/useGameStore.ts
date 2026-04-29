@@ -10,7 +10,7 @@ import { DB } from "../services/firebase";
 
 export type InventoryItem = {
   reelId: string;
-  name: string;    // user-defined name
+  name: string;
 };
 
 export interface Friend {
@@ -37,6 +37,7 @@ interface GameState {
   // core game data
   inventory: InventoryItem[];
   friends: Friend[];
+  steps: number;
 
   checkpointPending: boolean;
 
@@ -48,10 +49,9 @@ interface GameState {
   clearUser: () => void;
 
   // ------------------------
-  // INVENTORY (REELS)
+  // INVENTORY
   // ------------------------
   setInventory: (inv: InventoryItem[]) => void;
-
   addReel: (reelId: string) => void;
   releaseReel: (reelId: string) => void;
   renameReel: (reelId: string, name: string) => void;
@@ -60,8 +60,13 @@ interface GameState {
   // FRIENDS
   // ------------------------
   addFriend: (friend: Friend) => void;
-
   addFriendByUsername: (username: string) => Promise<void>;
+
+  // ------------------------
+  // STEPS
+  // ------------------------
+  setSteps: (steps: number) => void;
+  incrementSteps: (amount: number) => void;
 
   // ------------------------
   // UI / GAME STATE
@@ -92,6 +97,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       user: null,
       inventory: [],
       friends: [],
+      steps: 0,
       checkpointPending: false,
     }),
 
@@ -133,13 +139,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   // ------------------------
-  // FRIENDS (LOCAL STATE)
+  // FRIENDS
   // ------------------------
   friends: [],
 
   addFriend: (friend) =>
     set((state) => {
-      // prevent duplicates
       const exists = state.friends.some((f) => f.uid === friend.uid);
       if (exists) return state;
 
@@ -148,13 +153,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       };
     }),
 
-  /**
-   *  search + add friend by username
-   */
   addFriendByUsername: async (username: string) => {
     try {
-      // 1. lookup username → uid
-      const snap = await getDoc(doc(DB, "usernames", username));
+      const normalized = username.toLowerCase().trim();
+
+      // lookup username -> uid
+      const snap = await getDoc(doc(DB, "usernames", normalized));
 
       if (!snap.exists()) {
         console.log("User not found");
@@ -163,14 +167,13 @@ export const useGameStore = create<GameState>((set, get) => ({
 
       const uid = snap.data().uid;
 
-      // 2. fetch user profile
+      // fetch user profile
       const userSnap = await getDoc(doc(DB, "users", uid));
 
       if (!userSnap.exists()) return;
 
       const data = userSnap.data();
 
-      // 3. add to store
       set((state) => {
         const alreadyFriend = state.friends.some((f) => f.uid === uid);
         if (alreadyFriend) return state;
@@ -189,6 +192,18 @@ export const useGameStore = create<GameState>((set, get) => ({
       console.log("addFriendByUsername error:", err);
     }
   },
+
+  // ------------------------
+  // STEPS
+  // ------------------------
+  steps: 0,
+
+  setSteps: (steps) => set({ steps }),
+
+  incrementSteps: (amount) =>
+    set((state) => ({
+      steps: state.steps + amount,
+    })),
 
   // ------------------------
   // GAME STATE
