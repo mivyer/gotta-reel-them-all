@@ -196,7 +196,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
 
   return (
-    <LinearGradient colors={['#87ceeb', '#ffffff']} style={styles.container}>
+    <LinearGradient colors={['#22c0ff', '#b9eeff']} style={styles.container}>
     
     <View style={styles.container}>
       <ScrollView
