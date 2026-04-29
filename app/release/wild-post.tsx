@@ -28,7 +28,7 @@ export default function WildPostReleaseScreen() {
         </TouchableOpacity>
           <TouchableOpacity
           style={styles.btn}
-          onPress={() => router.replace('/home/HomeScreen')}
+          onPress={() => router.replace('/screens')}
         >
           <Text style={styles.btnText}>I'm done. Let me go home.</Text>
         </TouchableOpacity>
