@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useUserData } from '../hooks/useUserData';
 
 
 export default function RootLayout() {
@@ -13,6 +14,7 @@ export default function RootLayout() {
   });
 
   const { user, loading } = useAuth();
+  useUserData(user?.uid ?? null);
   const router = useRouter();
   const segments = useSegments();
 

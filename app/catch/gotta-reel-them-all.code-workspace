@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "gotta-reel-them-all",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"claudeCode.useTerminal": true
+	}
+}

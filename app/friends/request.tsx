@@ -110,7 +110,7 @@ export default function SendFriendRequestScreen() {
           <TouchableOpacity style={styles.btn} onPress={handleSend}>
             <Text style={styles.btnText}>Send Request</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.push('/screens/friends')}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>

@@ -6,6 +6,7 @@ import { useGameStore } from "../store/useGameStore";
 export const useUserData = (uid: string | null) => {
   const setInventory = useGameStore((s) => s.setInventory);
   const setUser = useGameStore((s) => s.setUser);
+  const setFriends = useGameStore((s) => s.setFriends);
 
   useEffect(() => {
     if (!uid) return;
@@ -17,8 +18,9 @@ export const useUserData = (uid: string | null) => {
 
       const data = snap.data();
 
-      setUser(data);
+      setUser({ ...data, uid: snap.id } as any);
       setInventory(data.inventory || []);
+      setFriends(data.friends || []);
     });
 
     return unsub;

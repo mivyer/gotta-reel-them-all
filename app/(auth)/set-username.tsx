@@ -4,11 +4,16 @@ import { useRouter } from "expo-router";
 import { FIREBASE_AUTH } from "../../services/firebase";
 import { DB } from "../../services/firebase";
 import { doc, getDoc, runTransaction } from "firebase/firestore";
+import { useGameStore } from "../../store/useGameStore";
 
 export default function SetUsername() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const currentUser = useGameStore((s) => s.user);
+
+  const setUser = useGameStore((s) => s.setUser);
+  const uid = FIREBASE_AUTH.currentUser?.uid;
 
   const router = useRouter();
 
@@ -47,22 +52,35 @@ export default function SetUsername() {
       // TRANSACTION (prevents race conditions)
       await runTransaction(DB, async (transaction) => {
         const usernameDoc = await transaction.get(usernameRef);
+        const userDoc = await transaction.get(userRef);
 
+        if (!userDoc.exists()) {
+          throw new Error("User not found");
+        }
+
+        const currentData = userDoc.data();
+        const oldUsername = currentData.username;
+
+        // new username already taken
         if (usernameDoc.exists()) {
           throw new Error("Username already taken");
         }
 
-        // reserve username
-        transaction.set(usernameRef, {
-          uid,
-        });
+        // remove old username (if it exists and is different)
+        if (oldUsername && oldUsername !== normalized) {
+          const oldUsernameRef = doc(DB, "usernames", oldUsername);
+          transaction.delete(oldUsernameRef);
+        }
+
+        // reserve new username
+        transaction.set(usernameRef, { uid });
 
         // update user profile
         transaction.update(userRef, {
           username: normalized,
         });
       });
-
+  
       // success → go to app
       router.replace("/screens");
 
@@ -90,10 +108,13 @@ export default function SetUsername() {
       {loading ? (
         <ActivityIndicator size="large" color="#9DEBFF" />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <TouchableOpacity style={styles.blueButton} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       )}
+      <TouchableOpacity style={styles.greyButton} onPress={() => router.push('/home/ProfileScreen')}>
+        <Text style={styles.buttonText}>Cancel</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -123,11 +144,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
-  button: {
+  blueButton: {
     backgroundColor: "#9DEBFF",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+  },
+  greyButton: {
+    padding: 12,
+    marginVertical: 5,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 8,
+    alignItems: "center"
   },
   buttonText: {
     fontFamily: "Agdasima",

@@ -8,6 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { FIREBASE_AUTH } from '../../services/firebase';
 import { NavigationProp } from '@react-navigation/native';
+import { useGameStore } from '../../store/useGameStore';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -81,7 +82,9 @@ interface RouteProps {
 export default function HomeScreen({ navigation }: RouteProps) {
   const router = useRouter();
 
-  const [steps, setSteps] = useState(START_STEPS);
+  const steps = useGameStore((state) => state.steps);
+  const setSteps = useGameStore((state) => state.setSteps);
+  const incrementSteps = useGameStore((state) => state.incrementSteps);
 
   const initPos = getPosForSteps(START_STEPS);
   const animX = useRef(new Animated.Value(initPos.x)).current;
@@ -120,39 +123,52 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
     const endPos = getPosForSteps(NEXT_CHECKPOINT);
     const duration = 4000;
+
     Animated.parallel([
       Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
       Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
-    ]).start();
+    ]).start(({ finished }) => {
+      if (finished) {
+        setAnimating(false);
+        setModalVisible(true); // ← open modal only after animation completes
+      }
+    });
 
-    const totalSteps = NEXT_CHECKPOINT - START_STEPS;
+    const totalSteps = NEXT_CHECKPOINT - useGameStore.getState().steps;
     const intervalMs = 80;
     const stepsPerTick = Math.ceil(totalSteps / (duration / intervalMs));
     const interval = setInterval(() => {
-      setSteps(prev => {
-        const next = Math.min(prev + stepsPerTick, NEXT_CHECKPOINT);
-        if (next >= NEXT_CHECKPOINT) clearInterval(interval);
-        return next;
-      });
+      const currentSteps = useGameStore.getState().steps; // read outside React
+      const next = Math.min(currentSteps + stepsPerTick, NEXT_CHECKPOINT);
+      setSteps(next); // writes to store
+      if (next >= NEXT_CHECKPOINT) clearInterval(interval);
     }, intervalMs);
+
+
     return () => clearInterval(interval);
   }, [animating]);
 
+  // useEffect(() => {
+  //   if (steps >= NEXT_CHECKPOINT) {
+  //     setModalVisible(true); // Open popup modal
+  //     // const t = setTimeout(() => router.push('./catching-screen'), 600);
+  //     //return () => clearTimeout(t); TODO
+  //   }
+  // }, [steps]);
   useEffect(() => {
-    if (steps >= NEXT_CHECKPOINT) {
-      setModalVisible(true); // Open popup modal
-      // const t = setTimeout(() => router.push('./catching-screen'), 600);
-      //return () => clearTimeout(t); TODO
-    }
-  }, [steps]);
+  if (animating) return; // ← don't override the animation
+  const pos = getPosForSteps(steps);
+  animX.setValue(pos.x);
+  animY.setValue(pos.y);
+}, [steps, animating]);
 
   useEffect(() => {
-  // small timeout lets the ScrollView finish laying out before scrolling
-  const t = setTimeout(() => {
-    scrollRef.current?.scrollToEnd({ animated: false });
-  }, 50);
-  return () => clearTimeout(t);
-}, []);
+    // small timeout lets the ScrollView finish laying out before scrolling
+    const t = setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: false });
+    }, 50);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleConfirmCatch = () => {
     setModalVisible(false);
@@ -163,11 +179,12 @@ export default function HomeScreen({ navigation }: RouteProps) {
   };
 
   const handleStepsEntered = (stepsValue: number) => {
-    setSteps(stepsValue)
+    setSteps(stepsValue); // now writes to the store
     if (stepsValue >= NEXT_CHECKPOINT) {
-      setAnimating(true)
+      setAnimating(true);
     }
-  }
+  };
+
 
   // State to control modal (aka pop-up) visibility
   const [modalMode, setModalMode] = useState<"actions" | "confirmCatch">("actions");
