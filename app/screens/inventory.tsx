@@ -52,6 +52,7 @@ export default function InventoryScreen() {
   };
 
   const handleRelease = () => {
+    releaseReel(selectedId!);
     if (!selected) return;
       router.push({
       pathname: "/release/named-post",
