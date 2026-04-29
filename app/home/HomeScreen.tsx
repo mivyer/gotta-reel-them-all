@@ -272,19 +272,19 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
             <Text style={styles.stepCountPopup}> {NEXT_CHECKPOINT} </Text>
 
-            <Text style={{ fontFamily: "Dokdo", fontSize: 20, textAlign: "center" }}> A swarm of bug-reels approaches... </Text>
+            <Text style={{ fontFamily: "Dokdo", fontSize: 20, textAlign: "center" }}> {"\n"} A swarm of bug-reels {"\n"}approaches... </Text>
             {modalMode === "actions" && (
               <View style={styles.buttonRow}>
                 <TouchableOpacity
                   style={styles.greyButton}
                   onPress={() => setModalVisible(false)}>
-                  <Text style={styles.buttonText}>no reels for me</Text>
+                  <Text style={styles.buttonText}>No reels for me...</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.blueButton}
                   onPress={handleConfirmCatch}>
-                  <Text style={styles.buttonText}>catch em</Text>
+                  <Text style={styles.buttonText}>Catch 'em!</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -444,19 +444,20 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    marginHorizontal:-100,
+    marginHorizontal:-100, // fixing border empty space
     justifyContent: "center", // Center modal vertically
     alignItems: "center", // Center horizontally
     backgroundColor: "rgba(0,0,0,0.5)" // Dark overlay
   },
   modalContent: {
-    paddingTop: 100,
     width: "50%",
+    flex:0.7,
     height: "80%",
     backgroundColor: "white",
     alignItems: "center",
     padding: -2,
-    borderRadius: 0
+    borderRadius: 0,
+    justifyContent: 'center',
   },
   modalTitle: {
     fontFamily: "Dokdo",
@@ -479,20 +480,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
     borderRadius: 8,
     width: 100,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   blueButton: {
     padding: 12,
     marginVertical: 5,
     backgroundColor: "#9DEBFF",
     borderRadius: 8,
-    width: 100
+    width: 100,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   buttonText: {
-    color: "black",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontFamily: "Agdasima",
-    fontSize: 20
+    fontFamily: 'Agdasima',
+    fontSize: 20,
+    color: '#000000',
+    textAlign: 'center',
+    verticalAlign : "middle",
   },
   buttonRow: {
     flexDirection: "row",

@@ -112,7 +112,7 @@ export default function SetUsername() {
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity style={styles.greyButton} onPress={() => router.push('/home/ProfileScreen')}>
+      <TouchableOpacity style={styles.greyButton} onPress={() => router.push('/screens/profile')}>
         <Text style={styles.buttonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
