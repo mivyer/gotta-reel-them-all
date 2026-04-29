@@ -50,6 +50,9 @@ function EmptyFriendSlot() {
 export default function FriendsScreen() {
   const router = useRouter();
   const friends = useGameStore((s) => s.friends);
+  const incoming = useGameStore((s) => s.incoming);
+
+  const incomingCount = friends.filter((_, i) => incoming[String(i)]).length;
 
   // Fill up to max capacity
   const slots = Array.from(
@@ -75,12 +78,26 @@ export default function FriendsScreen() {
             Capacity: {friends.length} / {MAX_FRIENDS}
           </Text>
 
-          <TouchableOpacity
-            style={styles.addFriendButton}
-            onPress={() => router.push('/friends/request')}
-          >
-            <Text style={styles.addFriendText}>Add Friend</Text>
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.incomingButton}
+              onPress={() => router.push('/trade/incoming')}
+            >
+              <Text style={styles.incomingText}>Trades</Text>
+              {incomingCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{incomingCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.addFriendButton}
+              onPress={() => router.push('/friends/request')}
+            >
+              <Text style={styles.addFriendText}>Add Friend</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -175,6 +192,44 @@ const styles = StyleSheet.create({
     fontFamily: 'Dokdo',
     fontSize: 22,
     color: '#000000',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  incomingButton: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  incomingText: {
+    fontFamily: 'Agdasima',
+    fontSize: 16,
+    color: '#000000',
+  },
+  badge: {
+    backgroundColor: '#ff6b6b',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    fontFamily: 'Agdasima',
+    fontSize: 12,
+    color: '#ffffff',
   },
   addFriendButton: {
     backgroundColor: '#ffffff',
