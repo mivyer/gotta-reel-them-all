@@ -39,7 +39,7 @@ export const REELS_DATABASE: Record<string, any> = {
     "37": require("../reels/37.mp4"),
 };
 
-export const NUM_REELS = 17;
+export const NUM_REELS = 38;
 
 export const BUG_REEL_FRAMES = [
   require("../assets/images/bugreel0.png"),
