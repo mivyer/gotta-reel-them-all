@@ -58,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="friends/detail" options={{ headerShown: false }} />
         <Stack.Screen name="trade/index" options={{ headerShown: false }} />
         <Stack.Screen name="trade/sent" options={{ headerShown: false }} />
+        <Stack.Screen name="trade/incoming" options={{ headerShown: false }} />
         <Stack.Screen
           name="checkpoint"
           options={{ presentation: 'modal', headerShown: false }}

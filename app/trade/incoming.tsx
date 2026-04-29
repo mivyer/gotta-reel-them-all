@@ -18,7 +18,6 @@ export default function IncomingTradesScreen() {
   const friends = useGameStore((s) => s.friends);
   const incoming = useGameStore((s) => s.incoming);
   const inventory = useGameStore((s) => s.inventory);
-  const setInventory = useGameStore((s) => s.setIncoming);
 
   const [actionId, setActionId] = useState<string | null>(null);
 
