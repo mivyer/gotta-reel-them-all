@@ -1,6 +1,10 @@
 import { create } from "zustand";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { DB } from "../services/firebase";
+
+const saveToFirestore = (uid: string, data: Partial<{ inventory: InventoryItem[]; friends: Friend[] }>) => {
+  updateDoc(doc(DB, "users", uid), data).catch((e) => console.log("Firestore save error:", e));
+};
 
 /**
  * ------------------------
@@ -59,6 +63,7 @@ interface GameState {
   // ------------------------
   // FRIENDS
   // ------------------------
+  setFriends: (friends: Friend[]) => void;
   addFriend: (friend: Friend) => void;
   addFriendByUsername: (username: string) => Promise<void>;
 
@@ -109,33 +114,25 @@ export const useGameStore = create<GameState>((set, get) => ({
   setInventory: (inv) => set({ inventory: inv }),
 
   addReel: (reelId) => {
-    const current = get().inventory;
-
-    if (current.some((r) => r.reelId === reelId)) return;
-
-    set({
-      inventory: [
-        ...current,
-        {
-          reelId,
-          name: "Unnamed Reel",
-        },
-      ],
-    });
+    const { inventory, user: authUser } = get();
+    if (inventory.some((r) => r.reelId === reelId)) return;
+    const updated = [...inventory, { reelId, name: "Unnamed Reel" }];
+    set({ inventory: updated });
+    if (authUser?.uid) saveToFirestore(authUser.uid, { inventory: updated });
   },
 
   releaseReel: (reelId) => {
-    set((state) => ({
-      inventory: state.inventory.filter((r) => r.reelId !== reelId),
-    }));
+    const { inventory, user: authUser } = get();
+    const updated = inventory.filter((r) => r.reelId !== reelId);
+    set({ inventory: updated });
+    if (authUser?.uid) saveToFirestore(authUser.uid, { inventory: updated });
   },
 
   renameReel: (reelId, name) => {
-    set((state) => ({
-      inventory: state.inventory.map((r) =>
-        r.reelId === reelId ? { ...r, name } : r
-      ),
-    }));
+    const { inventory, user: authUser } = get();
+    const updated = inventory.map((r) => r.reelId === reelId ? { ...r, name } : r);
+    set({ inventory: updated });
+    if (authUser?.uid) saveToFirestore(authUser.uid, { inventory: updated });
   },
 
   // ------------------------
@@ -143,15 +140,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   // ------------------------
   friends: [],
 
-  addFriend: (friend) =>
-    set((state) => {
-      const exists = state.friends.some((f) => f.uid === friend.uid);
-      if (exists) return state;
+  setFriends: (friends) => set({ friends }),
 
-      return {
-        friends: [...state.friends, friend],
-      };
-    }),
+  addFriend: (friend) => {
+    const { friends, user: authUser } = get();
+    if (friends.some((f) => f.uid === friend.uid)) return;
+    const updated = [...friends, friend];
+    set({ friends: updated });
+    if (authUser?.uid) saveToFirestore(authUser.uid, { friends: updated });
+  },
 
   addFriendByUsername: async (username: string) => {
     try {
@@ -174,20 +171,11 @@ export const useGameStore = create<GameState>((set, get) => ({
 
       const data = userSnap.data();
 
-      set((state) => {
-        const alreadyFriend = state.friends.some((f) => f.uid === uid);
-        if (alreadyFriend) return state;
-
-        return {
-          friends: [
-            ...state.friends,
-            {
-              uid,
-              username: data.username,
-            },
-          ],
-        };
-      });
+      const { friends, user: authUser } = get();
+      if (friends.some((f) => f.uid === uid)) return;
+      const updated = [...friends, { uid, username: data.username }];
+      set({ friends: updated });
+      if (authUser?.uid) saveToFirestore(authUser.uid, { friends: updated });
     } catch (err) {
       console.log("addFriendByUsername error:", err);
     }
