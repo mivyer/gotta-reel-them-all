@@ -54,19 +54,19 @@ export default function ProfileScreen() {
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>{reels.length}</Text>
-            <Text style={styles.statLabel}>Total Reels</Text>
+            <Text style={styles.statLabel}>Total Reels Watched</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={[styles.statValue, { color: '#9cebff' }]}>
-              {reels.filter((r) => r.color === 'blue').length}
+              {reels.filter((r) => r.status === 'saved').length}
             </Text>
-            <Text style={styles.statLabel}>Blue Reels</Text>
+            <Text style={styles.statLabel}>Total Reels Saved</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={[styles.statValue, { color: '#ff7ac1' }]}>
-              {reels.filter((r) => r.color === 'pink').length}
+              {reels.filter((r) => r.status === 'released').length}
             </Text>
-            <Text style={styles.statLabel}>Pink Reels</Text>
+            <Text style={styles.statLabel}>Total Reels Released</Text>
           </View>
         </View>
 

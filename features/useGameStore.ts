@@ -2,7 +2,8 @@ import { create } from 'zustand';
 
 export interface Reel {
   id: string;
-  color: 'blue' | 'pink';
+  // color: 'blue' | 'pink';
+  status: 'released' | 'saved' | 'watched';
   name: string;
   caughtAt: number;
   isNamed: boolean;
@@ -33,6 +34,7 @@ interface GameState {
   addReel: (reel: Reel) => void;
   removeReel: (id: string) => void;
   nameReel: (id: string, name: string) => void;
+  updateReelStatus: (id: string, status: 'watched' | 'saved' | 'released') => void;  // ← add this line
   addFriend: (friend: Friend) => void;
   setCheckpoint: (val: boolean) => void;
 }
@@ -68,6 +70,13 @@ export const useGameStore = create<GameState>((set) => ({
     set((state) => ({
       reels: state.reels.map((r) =>
         r.id === id ? { ...r, name, isNamed: true } : r
+      ),
+    })),
+
+  updateReelStatus: (id, status) =>
+    set((state) => ({
+      reels: state.reels.map((r) =>
+        r.id === id ? { ...r, status } : r
       ),
     })),
 

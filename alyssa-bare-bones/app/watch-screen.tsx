@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   backgroundColor: "white" // temp for visual purposes
 },
 
+
 videoWrapper: {
   width: "100%",
   flex: 1,
