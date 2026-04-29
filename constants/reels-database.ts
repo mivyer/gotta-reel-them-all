@@ -28,3 +28,17 @@ export const REELS_DATABASE: Record<string, any> = {
 };
 
 export const NUM_REELS = 17;
+
+export const BUG_REEL_FRAMES = [
+  require("../assets/images/bugreel0.png"),
+  require("../assets/images/bugreel1.png"),
+  require("../assets/images/bugreel2.png"),
+  require("../assets/images/bugreel3.png"),
+];
+
+export const EMPTY_REEL_FRAMES = [
+  require("../assets/images/empty-reel0.png"),
+  require("../assets/images/empty-reel1.png"),
+  require("../assets/images/empty-reel2.png"),
+  require("../assets/images/empty-reel3.png"),
+];

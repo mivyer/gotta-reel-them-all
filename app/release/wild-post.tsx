@@ -5,7 +5,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 export default function WildPostReleaseScreen() {
   const { color } = useLocalSearchParams<{ color: string }>();
   const router = useRouter();
-  const bgImage = require('../../assets/figma/wild-post-blue.png') | require('../../assets/figma/wild-post-pink.png');
+
+  const bgImage =
+    Math.random() > 0.5
+      ? require('../../assets/images/release-reel0.png')
+      : require('../../assets/images/release-reel1.png');
 
   return (
     <View style={styles.container}>
@@ -18,16 +22,11 @@ export default function WildPostReleaseScreen() {
 
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => router.replace('/(tabs)/inventory')}
+          onPress={() => router.replace('/catch/index')}
         >
-          <Text style={styles.btnText}>Back to Inventory</Text>
+          <Text style={styles.btnText}>Back to Catching!</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.homeBtn}
-          onPress={() => router.replace('/(tabs)')}
-        >
-          <Text style={styles.homeBtnText}>Go Home</Text>
-        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -44,6 +43,4 @@ const styles = StyleSheet.create({
   description: { fontFamily: 'Dokdor', fontSize: 32, color: '#000000', textAlign: 'center', lineHeight: 36 },
   btn: { width: '100%', backgroundColor: '#ffffff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
   btnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
-  homeBtn: { paddingVertical: 10 },
-  homeBtnText: { fontFamily: 'Agdasima', fontSize: 16, color: '#000000' },
 });
