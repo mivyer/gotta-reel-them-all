@@ -18,7 +18,7 @@ export const useUserData = (uid: string | null) => {
 
       const data = snap.data();
 
-      setUser(data as any);
+      setUser({ ...data, uid: snap.id } as any);
       setInventory(data.inventory || []);
       setFriends(data.friends || []);
     });
