@@ -35,6 +35,23 @@ export default function WatchScreen() {
       {reelId && (
         <View style={styles.btnRow}>
           <TouchableOpacity
+            style={styles.inventoryBtn}
+            onPress={async () => {
+              await videoRef.current?.stopAsync();
+              router.push({
+                pathname: "/release/wild-confirmation",
+                params: {
+                  reelId: reelId,
+                  video: video
+                },
+              });
+              ;
+            }}
+          >
+            <Text style={styles.nameBtnText}>Release it :/</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={styles.nameBtn}
             onPress={async () => {
               await videoRef.current?.stopAsync();
@@ -42,16 +59,6 @@ export default function WatchScreen() {
             }}
           >
             <Text style={styles.nameBtnText}>Name it!</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.inventoryBtn}
-            onPress={async () => {
-              await videoRef.current?.stopAsync();
-              router.push('/screens/inventory');
-            }}
-          >
-            <Text style={styles.nameBtnText}>Back to Inventory</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -24,7 +24,33 @@ export const REELS_DATABASE: Record<string, any> = {
     "22": require("../reels/22.mp4"),
     "23": require("../reels/23.mp4"),
     "24": require("../reels/24.mp4"),
-    "25": require("../reels/25.mp4")
+    "25": require("../reels/25.mp4"), 
+    "26": require("../reels/26.mp4"),
+    "27": require("../reels/27.mp4"),
+    "28": require("../reels/28.mp4"),
+    "29": require("../reels/29.mp4"),
+    "30": require("../reels/30.mp4"),
+    "31": require("../reels/31.mp4"),
+    "32": require("../reels/32.mp4"),
+    "33": require("../reels/33.mp4"),
+    "34": require("../reels/34.mp4"),
+    "35": require("../reels/35.mp4"),
+    "36": require("../reels/36.mp4"),
+    "37": require("../reels/37.mp4"),
 };
 
-export const NUM_REELS = 17;
+export const NUM_REELS = 38;
+
+export const BUG_REEL_FRAMES = [
+  require("../assets/images/bugreel0.png"),
+  require("../assets/images/bugreel1.png"),
+  require("../assets/images/bugreel2.png"),
+  require("../assets/images/bugreel3.png"),
+];
+
+export const EMPTY_REEL_FRAMES = [
+  require("../assets/images/empty-reel0.png"),
+  require("../assets/images/empty-reel1.png"),
+  require("../assets/images/empty-reel2.png"),
+  require("../assets/images/empty-reel3.png"),
+];

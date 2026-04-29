@@ -2,14 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
+
 export default function NamedPostReleaseScreen() {
-  const { name, color } = useLocalSearchParams<{ name: string; color: string }>();
+  const { name } = useLocalSearchParams<{ name: string}>();
   const router = useRouter();
 
   const bgImage =
-    Math.random() > 0.5
-      ? require('../../assets/figma/release-named-blue.png')
-      : require('../../assets/figma/release-named-pink.png');
+      Math.random() > 0.5
+        ? require('../../assets/images/release-reel0.png')
+        : require('../../assets/images/release-reel1.png');
       
   return (
     <View style={styles.container}>
@@ -28,10 +29,10 @@ export default function NamedPostReleaseScreen() {
           <Text style={styles.btnText}>Back to Inventory</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.homeBtn}
+          style={styles.btn}
           onPress={() => router.replace('/screens')}
         >
-          <Text style={styles.homeBtnText}>Go Home</Text>
+          <Text style={styles.btnText}>Go Home</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -50,6 +51,4 @@ const styles = StyleSheet.create({
   reelName: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
   btn: { width: '100%', backgroundColor: '#ffffff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
   btnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
-  homeBtn: { paddingVertical: 10 },
-  homeBtnText: { fontFamily: 'Agdasima', fontSize: 16, color: '#000000' },
 });

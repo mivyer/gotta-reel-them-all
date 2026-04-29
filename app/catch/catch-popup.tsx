@@ -30,7 +30,7 @@ export default function CatchPopup() {
     const video = REELS_DATABASE[reel.reelId];
 
     router.push({
-      pathname: '/reel/view',
+      pathname: '/reel/view-from-wild',
       params: {
         reelId: reel.reelId,
         name: "Wild Reel",

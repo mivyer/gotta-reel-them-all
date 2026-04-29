@@ -12,23 +12,11 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useGameStore, InventoryItem } from "../../store/useGameStore";
-import { REELS_DATABASE } from "../../constants/reels-database";
+import { REELS_DATABASE, EMPTY_REEL_FRAMES, BUG_REEL_FRAMES } from "../../constants/reels-database";
 
 const INVENTORY_SIZE = 12;
 
-const bugReelFrames = [
-  require("../../assets/images/bugreel0.png"),
-  require("../../assets/images/bugreel1.png"),
-  require("../../assets/images/bugreel2.png"),
-  require("../../assets/images/bugreel3.png"),
-];
 
-const emptyReelFrames = [
-  require("../../assets/images/empty-reel0.png"),
-  require("../../assets/images/empty-reel1.png"),
-  require("../../assets/images/empty-reel2.png"),
-  require("../../assets/images/empty-reel3.png"),
-];
 
 const NUM_BUGREEL_FRAMES = 4;
 const NUM_EMPTY_FRAMES = 4;
@@ -64,8 +52,15 @@ export default function InventoryScreen() {
   };
 
   const handleRelease = () => {
+    releaseReel(selectedId!);
     if (!selected) return;
-    releaseReel(selected.reelId); // TODO: navigate to release screen/image for 5s, then remove from inventory after animation
+      router.push({
+      pathname: "/release/named-post",
+      params: {
+        name: selected.name,
+        reelId: selected.reelId
+      },
+    });
     setModalVisible(false);
   };
 
@@ -87,7 +82,7 @@ export default function InventoryScreen() {
     const video = REELS_DATABASE[selected.reelId];
 
     router.push({
-      pathname: "/reel/view",
+      pathname: "/reel/view-from-inventory",
       params: {
         reelId: selected.reelId,
         name: selected.name,
@@ -110,7 +105,7 @@ export default function InventoryScreen() {
           {isEmpty ? (
             <Image
               source={
-                emptyReelFrames[
+                EMPTY_REEL_FRAMES[
                 Math.floor(Math.random() * NUM_EMPTY_FRAMES)
                 ]
               }
@@ -120,7 +115,7 @@ export default function InventoryScreen() {
           ) : (
             <Image
               source={
-                bugReelFrames[
+                BUG_REEL_FRAMES[
                 Math.floor(Math.random() * NUM_BUGREEL_FRAMES)
                 ]
               }
@@ -175,7 +170,7 @@ export default function InventoryScreen() {
 
                 <View style={styles.modalFrameContainer}>
                   <Image
-                    source={bugReelFrames[0]}
+                    source={BUG_REEL_FRAMES[0]}
                     style={styles.modalFrame}
                     resizeMode="contain"
                   />
