@@ -140,7 +140,7 @@ export default function FriendsScreen() {
   );
 }
 
-const NUM_COLUMNS = 5;
+const NUM_COLUMNS = 3;
 
 const styles = StyleSheet.create({
   container: {

@@ -14,25 +14,64 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const W = Dimensions.get('window').width;
 const H = Dimensions.get('window').height;
-const CANVAS_H = H * 3;
+const CANVAS_H = H * 10;
 
 // ── Checkpoint config ─────────────────────────────────────────────────────────
-var NEXT_CHECKPOINT = 500; // first reel-catch trigger
-const START_STEPS = 0; // hardcoded launch value — swap for pedometer later
+  const START_STEPS = 0; // hardcoded launch value — swap for pedometer later
 
 // ── Path waypoints (symmetric S-curve) ───────────────────────────────────────
 const WAYPOINTS = [
-  { steps: 0, fx: 0.50, fy: 0.97 },
-  { steps: 500, fx: 0.75, fy: 0.87 },
-  { steps: 1000, fx: 0.25, fy: 0.77 },
-  { steps: 1500, fx: 0.75, fy: 0.67 },
-  { steps: 2000, fx: 0.25, fy: 0.57 },
-  { steps: 2500, fx: 0.75, fy: 0.47 },
-  { steps: 3000, fx: 0.25, fy: 0.37 },
-  { steps: 3500, fx: 0.75, fy: 0.27 },
-  { steps: 4000, fx: 0.25, fy: 0.17 },
-  { steps: 4500, fx: 0.75, fy: 0.10 },
-  { steps: 5000, fx: 0.50, fy: 0.03 },
+  { steps: 0, fx: 0.50, fy: 0.99 },
+  { steps: 500, fx: 0.75, fy: 0.97 },
+  { steps: 1000, fx: 0.25, fy: 0.95 },
+  { steps: 1500, fx: 0.75, fy: 0.93 },
+  { steps: 2000, fx: 0.25, fy: 0.91 },
+  { steps: 2500, fx: 0.75, fy: 0.89 },
+  { steps: 3000, fx: 0.25, fy: 0.87 },
+  { steps: 3500, fx: 0.75, fy: 0.85 },
+  { steps: 4000, fx: 0.25, fy: 0.83 },
+  { steps: 4500, fx: 0.75, fy: 0.81 },
+  { steps: 5000, fx: 0.25, fy: 0.79 },
+  { steps: 5500, fx: 0.75, fy: 0.77 },
+  { steps: 6000, fx: 0.25, fy: 0.75 },
+  { steps: 6500, fx: 0.75, fy: 0.73 },
+  { steps: 7000, fx: 0.25, fy: 0.71 },
+  { steps: 7500, fx: 0.75, fy: 0.69 },
+  { steps: 8000, fx: 0.25, fy: 0.67 },
+  { steps: 8500, fx: 0.75, fy: 0.65 },
+  { steps: 9000, fx: 0.25, fy: 0.63 },
+  { steps: 9500, fx: 0.75, fy: 0.61 },
+  { steps: 10000, fx: 0.25, fy: 0.59 },
+  { steps: 10500, fx: 0.75, fy: 0.57 },
+  { steps: 11000, fx: 0.25, fy: 0.55 },
+  { steps: 11500, fx: 0.75, fy: 0.53 },
+  { steps: 12000, fx: 0.25, fy: 0.51 },
+  { steps: 12500, fx: 0.75, fy: 0.49 },
+  { steps: 13000, fx: 0.25, fy: 0.47 },
+  { steps: 13500, fx: 0.75, fy: 0.45 },
+  { steps: 14000, fx: 0.25, fy: 0.43 },
+  { steps: 14500, fx: 0.75, fy: 0.41 },
+  { steps: 15000, fx: 0.25, fy: 0.39 },
+  { steps: 15500, fx: 0.75, fy: 0.37 },
+  { steps: 16000, fx: 0.25, fy: 0.35 },
+  { steps: 16500, fx: 0.75, fy: 0.33 },
+  { steps: 17000, fx: 0.25, fy: 0.31 },
+  { steps: 17500, fx: 0.75, fy: 0.29 },
+  { steps: 18000, fx: 0.25, fy: 0.27 },
+  { steps: 18500, fx: 0.75, fy: 0.25 },
+  { steps: 19000, fx: 0.25, fy: 0.23 },
+  { steps: 19500, fx: 0.75, fy: 0.21 },
+  { steps: 20000, fx: 0.25, fy: 0.19 },
+  { steps: 20500, fx: 0.75, fy: 0.17 },
+  { steps: 21000, fx: 0.25, fy: 0.15 },
+  { steps: 21500, fx: 0.75, fy: 0.13 },
+  { steps: 22000, fx: 0.25, fy: 0.11 },
+  { steps: 22500, fx: 0.75, fy: 0.09 },
+  { steps: 23000, fx: 0.25, fy: 0.07 },
+  { steps: 23500, fx: 0.75, fy: 0.05 },
+  { steps: 24000, fx: 0.25, fy: 0.04 },
+  { steps: 24500, fx: 0.75, fy: 0.03 },
+  { steps: 25000, fx: 0.50, fy: 0.01 },
 ];
 const CIRCLES = WAYPOINTS.slice(1);
 
@@ -57,17 +96,57 @@ function getPosForSteps(steps: number): { x: number; y: number } {
 // ── SVG path ──────────────────────────────────────────────────────────────────
 const p = (fx: number, fy: number) => `${fx * W} ${fy * CANVAS_H}`;
 const PATH_D = [
-  `M ${p(0.50, 0.97)}`,
-  `C ${p(0.65, 0.94)} ${p(0.80, 0.90)} ${p(0.75, 0.87)}`,
-  `C ${p(0.68, 0.83)} ${p(0.32, 0.80)} ${p(0.25, 0.77)}`,
-  `C ${p(0.18, 0.73)} ${p(0.68, 0.70)} ${p(0.75, 0.67)}`,
-  `C ${p(0.82, 0.63)} ${p(0.32, 0.60)} ${p(0.25, 0.57)}`,
-  `C ${p(0.18, 0.53)} ${p(0.68, 0.50)} ${p(0.75, 0.47)}`,
-  `C ${p(0.82, 0.43)} ${p(0.32, 0.40)} ${p(0.25, 0.37)}`,
-  `C ${p(0.18, 0.33)} ${p(0.68, 0.30)} ${p(0.75, 0.27)}`,
-  `C ${p(0.82, 0.23)} ${p(0.32, 0.20)} ${p(0.25, 0.17)}`,
-  `C ${p(0.18, 0.13)} ${p(0.65, 0.10)} ${p(0.75, 0.10)}`,
-  `C ${p(0.82, 0.09)} ${p(0.55, 0.04)} ${p(0.50, 0.03)}`,
+  `M ${p(0.50, 0.99)}`,
+  `C ${p(0.65, 0.98)} ${p(0.80, 0.97)} ${p(0.75, 0.97)}`,
+  `C ${p(0.68, 0.96)} ${p(0.32, 0.95)} ${p(0.25, 0.95)}`,
+  `C ${p(0.18, 0.94)} ${p(0.68, 0.93)} ${p(0.75, 0.93)}`,
+  `C ${p(0.82, 0.92)} ${p(0.32, 0.91)} ${p(0.25, 0.91)}`,
+  `C ${p(0.18, 0.90)} ${p(0.68, 0.89)} ${p(0.75, 0.89)}`,
+  `C ${p(0.82, 0.88)} ${p(0.32, 0.87)} ${p(0.25, 0.87)}`,
+  `C ${p(0.18, 0.86)} ${p(0.68, 0.85)} ${p(0.75, 0.85)}`,
+  `C ${p(0.82, 0.84)} ${p(0.32, 0.83)} ${p(0.25, 0.83)}`,
+  `C ${p(0.18, 0.82)} ${p(0.68, 0.81)} ${p(0.75, 0.81)}`,
+  `C ${p(0.82, 0.80)} ${p(0.32, 0.79)} ${p(0.25, 0.79)}`,
+  `C ${p(0.18, 0.78)} ${p(0.68, 0.77)} ${p(0.75, 0.77)}`,
+  `C ${p(0.82, 0.76)} ${p(0.32, 0.75)} ${p(0.25, 0.75)}`,
+  `C ${p(0.18, 0.74)} ${p(0.68, 0.73)} ${p(0.75, 0.73)}`,
+  `C ${p(0.82, 0.72)} ${p(0.32, 0.71)} ${p(0.25, 0.71)}`,
+  `C ${p(0.18, 0.70)} ${p(0.68, 0.69)} ${p(0.75, 0.69)}`,
+  `C ${p(0.82, 0.68)} ${p(0.32, 0.67)} ${p(0.25, 0.67)}`,
+  `C ${p(0.18, 0.66)} ${p(0.68, 0.65)} ${p(0.75, 0.65)}`,
+  `C ${p(0.82, 0.64)} ${p(0.32, 0.63)} ${p(0.25, 0.63)}`,
+  `C ${p(0.18, 0.62)} ${p(0.68, 0.61)} ${p(0.75, 0.61)}`,
+  `C ${p(0.82, 0.60)} ${p(0.32, 0.59)} ${p(0.25, 0.59)}`,
+  `C ${p(0.18, 0.58)} ${p(0.68, 0.57)} ${p(0.75, 0.57)}`,
+  `C ${p(0.82, 0.56)} ${p(0.32, 0.55)} ${p(0.25, 0.55)}`,
+  `C ${p(0.18, 0.54)} ${p(0.68, 0.53)} ${p(0.75, 0.53)}`,
+  `C ${p(0.82, 0.52)} ${p(0.32, 0.51)} ${p(0.25, 0.51)}`,
+  `C ${p(0.18, 0.50)} ${p(0.68, 0.49)} ${p(0.75, 0.49)}`,
+  `C ${p(0.82, 0.48)} ${p(0.32, 0.47)} ${p(0.25, 0.47)}`,
+  `C ${p(0.18, 0.46)} ${p(0.68, 0.45)} ${p(0.75, 0.45)}`,
+  `C ${p(0.82, 0.44)} ${p(0.32, 0.43)} ${p(0.25, 0.43)}`,
+  `C ${p(0.18, 0.42)} ${p(0.68, 0.41)} ${p(0.75, 0.41)}`,
+  `C ${p(0.82, 0.40)} ${p(0.32, 0.39)} ${p(0.25, 0.39)}`,
+  `C ${p(0.18, 0.38)} ${p(0.68, 0.37)} ${p(0.75, 0.37)}`,
+  `C ${p(0.82, 0.36)} ${p(0.32, 0.35)} ${p(0.25, 0.35)}`,
+  `C ${p(0.18, 0.34)} ${p(0.68, 0.33)} ${p(0.75, 0.33)}`,
+  `C ${p(0.82, 0.32)} ${p(0.32, 0.31)} ${p(0.25, 0.31)}`,
+  `C ${p(0.18, 0.30)} ${p(0.68, 0.29)} ${p(0.75, 0.29)}`,
+  `C ${p(0.82, 0.28)} ${p(0.32, 0.27)} ${p(0.25, 0.27)}`,
+  `C ${p(0.18, 0.26)} ${p(0.68, 0.25)} ${p(0.75, 0.25)}`,
+  `C ${p(0.82, 0.24)} ${p(0.32, 0.23)} ${p(0.25, 0.23)}`,
+  `C ${p(0.18, 0.22)} ${p(0.68, 0.21)} ${p(0.75, 0.21)}`,
+  `C ${p(0.82, 0.20)} ${p(0.32, 0.19)} ${p(0.25, 0.19)}`,
+  `C ${p(0.18, 0.18)} ${p(0.68, 0.17)} ${p(0.75, 0.17)}`,
+  `C ${p(0.82, 0.16)} ${p(0.32, 0.15)} ${p(0.25, 0.15)}`,
+  `C ${p(0.18, 0.14)} ${p(0.68, 0.13)} ${p(0.75, 0.13)}`,
+  `C ${p(0.82, 0.12)} ${p(0.32, 0.11)} ${p(0.25, 0.11)}`,
+  `C ${p(0.18, 0.10)} ${p(0.68, 0.09)} ${p(0.75, 0.09)}`,
+  `C ${p(0.82, 0.08)} ${p(0.32, 0.07)} ${p(0.25, 0.07)}`,
+  `C ${p(0.18, 0.06)} ${p(0.68, 0.05)} ${p(0.75, 0.05)}`,
+  `C ${p(0.82, 0.04)} ${p(0.32, 0.04)} ${p(0.25, 0.04)}`,
+  `C ${p(0.18, 0.03)} ${p(0.68, 0.03)} ${p(0.75, 0.03)}`,
+  `C ${p(0.82, 0.02)} ${p(0.55, 0.01)} ${p(0.50, 0.01)}`,
 ].join(' ');
 
 const AVATAR_SIZE = 80;
@@ -80,6 +159,9 @@ interface RouteProps {
 }
 
 export default function HomeScreen({ navigation }: RouteProps) {
+  const nextCheckpoint = useRef(500); // first reel-catch trigger
+  const [tappedCheckpoint, setTappedCheckpoint] = useState<number>(0);
+
   const router = useRouter();
 
   const steps = useGameStore((state) => state.steps);
@@ -121,7 +203,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
   useEffect(() => {
     if (!animating) return;
 
-    const endPos = getPosForSteps(NEXT_CHECKPOINT);
+    const endPos = getPosForSteps(nextCheckpoint.current);
     const duration = 4000;
 
     Animated.parallel([
@@ -134,14 +216,14 @@ export default function HomeScreen({ navigation }: RouteProps) {
       }
     });
 
-    const totalSteps = NEXT_CHECKPOINT - useGameStore.getState().steps;
+    const totalSteps = nextCheckpoint.current - useGameStore.getState().steps;
     const intervalMs = 80;
     const stepsPerTick = Math.ceil(totalSteps / (duration / intervalMs));
     const interval = setInterval(() => {
       const currentSteps = useGameStore.getState().steps; // read outside React
-      const next = Math.min(currentSteps + stepsPerTick, NEXT_CHECKPOINT);
+      const next = Math.min(currentSteps + stepsPerTick, nextCheckpoint.current);
       setSteps(next); // writes to store
-      if (next >= NEXT_CHECKPOINT) clearInterval(interval);
+      if (next >= nextCheckpoint.current) clearInterval(interval);
     }, intervalMs);
 
 
@@ -149,18 +231,18 @@ export default function HomeScreen({ navigation }: RouteProps) {
   }, [animating]);
 
   // useEffect(() => {
-  //   if (steps >= NEXT_CHECKPOINT) {
+  //   if (steps >= nextCheckpoint.current) {
   //     setModalVisible(true); // Open popup modal
   //     // const t = setTimeout(() => router.push('./catching-screen'), 600);
   //     //return () => clearTimeout(t); TODO
   //   }
   // }, [steps]);
   useEffect(() => {
-  if (animating) return; // ← don't override the animation
-  const pos = getPosForSteps(steps);
-  animX.setValue(pos.x);
-  animY.setValue(pos.y);
-}, [steps, animating]);
+    if (animating) return; // ← don't override the animation
+    const pos = getPosForSteps(steps);
+    animX.setValue(pos.x);
+    animY.setValue(pos.y);
+  }, [steps, animating]);
 
   useEffect(() => {
     // small timeout lets the ScrollView finish laying out before scrolling
@@ -173,16 +255,28 @@ export default function HomeScreen({ navigation }: RouteProps) {
   const handleConfirmCatch = () => {
     setModalVisible(false);
     setModalMode("actions");
-    NEXT_CHECKPOINT += 500
+    nextCheckpoint.current += 500
     // navigate to catcing screen
     router.replace('/catch');
   };
 
   const handleStepsEntered = (stepsValue: number) => {
-    setSteps(stepsValue); // now writes to the store
-    if (stepsValue >= NEXT_CHECKPOINT) {
-      setAnimating(true);
-    }
+    setSteps(stepsValue);
+    // animate to exact position of the steps entered (no checkpoint trigger)
+    const endPos = getPosForSteps(stepsValue);
+    const currentPos = getPosForSteps(useGameStore.getState().steps);
+    const distance = Math.abs(stepsValue - useGameStore.getState().steps);
+    const duration = Math.min(Math.max(distance * 2, 500), 4000);
+
+    Animated.parallel([
+      Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
+      Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
+    ]).start();
+  };
+
+  const handleCirclePress = (cpSteps: number) => {
+    setTappedCheckpoint(cpSteps);
+    setModalVisible(true);
   };
 
 
@@ -193,184 +287,214 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
   const [modal2Visible, setModal2Visible] = useState(false);
 
-
+  // ── Circle state helper ───────────────────────────────────────────────────────
+  function getCircleState(circleSteps: number, currentSteps: number): 'used' | 'unlocked' | 'locked' {
+    if (currentSteps >= circleSteps + 500) return 'used';
+    if (currentSteps >= circleSteps) return 'unlocked';
+    return 'locked';
+  }
 
   return (
     <LinearGradient colors={['#22c0ff', '#b9eeff']} style={styles.container}>
-    
-    <View style={styles.container}>
-      <ScrollView
-        ref={scrollRef}
-        style={StyleSheet.absoluteFill}
-        contentContainerStyle={{ width: W, height: CANVAS_H }}
-        scrollEnabled={true}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Squiggly dashed path */}
-        <Svg width={W} height={CANVAS_H} pointerEvents="none">
-          <Path
-            d={PATH_D}
-            stroke="#5a9bb8"
-            strokeWidth={4}
-            strokeDasharray="14 12"
-            strokeLinecap="round"
-            fill="none"
-          />
-        </Svg>
 
-        {/* Checkpoint circles */}
-        {CIRCLES.map((cp) => (
-          <View
-            key={cp.steps}
-            style={[styles.circle, {
-              left: cp.fx * W - CIRCLE_W / 2,
-              top: cp.fy * CANVAS_H - CIRCLE_H / 2,
-            }]}
-          >
-            <Text style={styles.circleText}>{cp.steps.toLocaleString()}</Text>
-          </View>
-        ))}
-
-        {/* Avatar */}
-        <Animated.View
-          style={[
-            styles.avatarOuter,
-            {
-              left: Animated.subtract(animX, AVATAR_SIZE / 2),
-              top: Animated.subtract(animY, AVATAR_SIZE / 2),
-            },
-          ]}
+      <View style={styles.container}>
+        <ScrollView
+          ref={scrollRef}
+          style={StyleSheet.absoluteFill}
+          contentContainerStyle={{ width: W, height: CANVAS_H }}
+          scrollEnabled={true}
+          showsVerticalScrollIndicator={false}
         >
-          <Animated.View style={{ transform: [{ translateY: bounce }] }}>
-            <Image
-              source={require('../../assets/figma/profile-icon-small.png')}
-              style={styles.avatar}
-              resizeMode="contain"
+          {/* Squiggly dashed path */}
+          <Svg width={W} height={CANVAS_H} pointerEvents="none">
+            <Path
+              d={PATH_D}
+              stroke="#5a9bb8"
+              strokeWidth={4}
+              strokeDasharray="14 12"
+              strokeLinecap="round"
+              fill="none"
             />
-            <Text style={styles.flag}>🚩</Text>
+          </Svg>
+
+
+          {/* Checkpoint circles */}
+          {CIRCLES.map((cp) => {
+            const state = getCircleState(cp.steps, steps);
+            return (
+              <TouchableOpacity
+                key={cp.steps}
+                activeOpacity={state === 'unlocked' ? 0.7 : 1}
+                onPress={() => {
+                  if (state === 'unlocked') {
+                    handleCirclePress(cp.steps);
+                  }
+                }}
+                style={[
+                  styles.circle,
+                  state === 'used' && styles.circleUsed,
+                  state === 'unlocked' && styles.circleUnlocked,
+                  state === 'locked' && styles.circleLocked,
+                  {
+                    left: cp.fx * W - CIRCLE_W / 2,
+                    top: cp.fy * CANVAS_H - CIRCLE_H / 2,
+                  },
+                ]}
+              >
+                {state === 'locked' && <Text style={styles.circleLock}>🔒</Text>}
+                {state === 'unlocked' && <Text style={styles.circleGlow}>✨</Text>}
+                {state === 'used' && <Text style={styles.circleCheck}>✓</Text>}
+                <Text style={[
+                  styles.circleText,
+                  state === 'locked' && styles.circleTextLocked,
+                ]}>
+                  {cp.steps.toLocaleString()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+
+
+          {/* Avatar */}
+          <Animated.View
+            style={[
+              styles.avatarOuter,
+              {
+                left: Animated.subtract(animX, AVATAR_SIZE / 2),
+                top: Animated.subtract(animY, AVATAR_SIZE / 2),
+              },
+            ]}
+          >
+            <Animated.View style={{ transform: [{ translateY: bounce }] }}>
+              <Image
+                source={require('../../assets/figma/profile-icon-small.png')}
+                style={styles.avatar}
+                resizeMode="contain"
+              />
+              <Text style={styles.flag}>🚩</Text>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-      </ScrollView>
+        </ScrollView>
 
-      {/* Step count */}
-      <View style={[styles.stepBlock, { pointerEvents: 'none' }]}>
-        <Text style={styles.stepNumber}>{steps.toLocaleString()}</Text>
-        <Text style={styles.stepLabel}>stePs</Text>
-      </View>
+        {/* Step count */}
+        <View style={[styles.stepBlock, { pointerEvents: 'none' }]}>
+          <Text style={styles.stepNumber}>{steps.toLocaleString()}</Text>
+          <Text style={styles.stepLabel}>stePs</Text>
+        </View>
 
-      {/* POP-UP MODAL FOR CATCH CONFIRMATION */}
-      <Modal
-        visible={modalVisible} // Controls visibility
-        transparent={true} // Makes background dim
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}> You've reached a new checkpoint!</Text>
-            {/* <Image
+        {/* POP-UP MODAL FOR CATCH CONFIRMATION */}
+        <Modal
+          visible={modalVisible} // Controls visibility
+          transparent={true} // Makes background dim
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}> You've reached a new checkpoint!</Text>
+              {/* <Image
               source={require("../../assets/images/checkpoint-background.png")}
               style={styles.backgroundImage}/> */}
 
-            <Text style={styles.stepCountPopup}> {NEXT_CHECKPOINT} </Text>
+              <Text style={styles.stepCountPopup}>{tappedCheckpoint.toLocaleString()}</Text>
 
-            <Text style={{ fontFamily: "Dokdo", fontSize: 20, textAlign: "center" }}> A swarm of bug-reels approaches... </Text>
-            {modalMode === "actions" && (
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.greyButton}
-                  onPress={() => setModalVisible(false)}>
-                  <Text style={styles.buttonText}>no reels for me</Text>
-                </TouchableOpacity>
+              <Text style={{ fontFamily: "Dokdo", fontSize: 20, textAlign: "center" }}> {"\n"} A swarm of bug-reels {"\n"}approaches... </Text>
+              {modalMode === "actions" && (
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={styles.greyButton}
+                    onPress={() => setModalVisible(false)}>
+                    <Text style={styles.buttonText}>No reels for me...</Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.blueButton}
-                  onPress={handleConfirmCatch}>
-                  <Text style={styles.buttonText}>catch em</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  <TouchableOpacity
+                    style={styles.blueButton}
+                    onPress={handleConfirmCatch}>
+                    <Text style={styles.buttonText}>Catch 'em!</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      </Modal >
+        </Modal >
 
-      {/* Enter Steps Modal*/}
-      <Modal
-        visible={modal2Visible}
-        transparent={true}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Enter Number of Steps</Text>
+        {/* Enter Steps Modal*/}
+        <Modal
+          visible={modal2Visible}
+          transparent={true}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Enter Number of Steps</Text>
 
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: '#ccc',
-                borderRadius: 8,
-                padding: 10,
-                width: '80%',
-                fontFamily: 'Agdasima',
-                fontSize: 32,
-                textAlign: 'center',
-                marginVertical: 16,
-              }}
-              keyboardType="number-pad"
-              placeholder="0"
-              value={inputText}
-              onChangeText={(text) => setInputText(text.replace(/[^0-9]/g, ''))} // only allows integers
-            />
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 8,
+                  padding: 10,
+                  width: '80%',
+                  fontFamily: 'Agdasima',
+                  fontSize: 32,
+                  textAlign: 'center',
+                  marginVertical: 16,
+                }}
+                keyboardType="number-pad"
+                placeholder="0"
+                value={inputText}
+                onChangeText={(text) => setInputText(text.replace(/[^0-9]/g, ''))} // only allows integers
+              />
 
-            {modalMode === "actions" && (
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.greyButton}
-                  onPress={() => {
-                    setModal2Visible(false);
-                    setInputText(''); // reset input on cancel
-                  }}>
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.blueButton}
-                  onPress={() => {
-                    const parsed = parseInt(inputText, 10);
-                    if (!isNaN(parsed)) {
-                      console.log(parsed)
-                      setNumStepsEntered(parsed);
-                      console.log(numStepsEntered)
+              {modalMode === "actions" && (
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={styles.greyButton}
+                    onPress={() => {
                       setModal2Visible(false);
-                      handleStepsEntered(parsed);
-                      setInputText(''); // reset after confirm
-                    }
-                  }}>
-                  <Text style={styles.buttonText}>I pinky promise I walked this much...</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                      setInputText(''); // reset input on cancel
+                    }}>
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.blueButton}
+                    onPress={() => {
+                      const parsed = parseInt(inputText, 10);
+                      if (!isNaN(parsed)) {
+                        console.log(parsed)
+                        setNumStepsEntered(parsed);
+                        console.log(numStepsEntered)
+                        setModal2Visible(false);
+                        handleStepsEntered(parsed);
+                        setInputText(''); // reset after confirm
+                      }
+                    }}>
+                    <Text style={styles.buttonText}>I pinky promise I walked this much...</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
+        </Modal>
+
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.topBarBtn} onPress={() => setModal2Visible(true)}>
+            <Text style={styles.startWalkingLabel}>Start Walking</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={styles.topBarBtn}>
+            <Text style={styles.startWalkingLabel}>Logout</Text>
+          </TouchableOpacity>
+
+
         </View>
-      </Modal>
-
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.topBarBtn} onPress={() => setModal2Visible(true)}>
-          <Text style={styles.startWalkingLabel}>Start Walking</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()} style={styles.topBarBtn}>
-          <Text style={styles.startWalkingLabel}>Logout</Text>
-        </TouchableOpacity>
 
 
       </View>
-
-
-    </View>
-</LinearGradient>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1},
+  container: { flex: 1 },
 
   stepBlock: {
     position: 'absolute',
@@ -444,19 +568,20 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    marginHorizontal:-100,
+    marginHorizontal: -100, // fixing border empty space
     justifyContent: "center", // Center modal vertically
     alignItems: "center", // Center horizontally
     backgroundColor: "rgba(0,0,0,0.5)" // Dark overlay
   },
   modalContent: {
-    paddingTop: 100,
     width: "50%",
+    flex: 0.7,
     height: "80%",
     backgroundColor: "white",
     alignItems: "center",
     padding: -2,
-    borderRadius: 0
+    borderRadius: 0,
+    justifyContent: 'center',
   },
   modalTitle: {
     fontFamily: "Dokdo",
@@ -479,20 +604,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
     borderRadius: 8,
     width: 100,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   blueButton: {
     padding: 12,
     marginVertical: 5,
     backgroundColor: "#9DEBFF",
     borderRadius: 8,
-    width: 100
+    width: 100,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   buttonText: {
-    color: "black",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontFamily: "Agdasima",
-    fontSize: 20
+    fontFamily: 'Agdasima',
+    fontSize: 20,
+    color: '#000000',
+    textAlign: 'center',
+    verticalAlign: "middle",
   },
   buttonRow: {
     flexDirection: "row",
@@ -552,5 +681,50 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
+  },
+  circleUsed: {
+    backgroundColor: '#a8a8a8',
+    borderWidth: 2,
+    borderColor: '#888888',
+    opacity: 0.7,
+  },
+  circleUnlocked: {
+    backgroundColor: '#82d840',
+    borderWidth: 2,
+    borderColor: '#4caf10',
+    shadowColor: '#82d840',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  circleLocked: {
+    backgroundColor: '#c8e6f5',
+    borderWidth: 2,
+    borderColor: '#8ab8cc',
+    opacity: 0.6,
+  },
+  circleTextLocked: {
+    color: '#666666',
+  },
+  circleLock: {
+    fontSize: 10,
+    position: 'absolute',
+    top: 2,
+    right: 4,
+  },
+  circleGlow: {
+    fontSize: 10,
+    position: 'absolute',
+    top: 2,
+    right: 4,
+  },
+  circleCheck: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#555555',
+    position: 'absolute',
+    top: 2,
+    right: 6,
   },
 });
