@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   title: {
-    fontFamily: 'Dokdo_400Regular',
+    fontFamily: 'Dokdo',
     fontSize: 56,
     color: '#000000',
     textAlign: 'center',
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subtitle: {
-    fontFamily: 'Dokdo_400Regular',
+    fontFamily: 'Dokdo',
     fontSize: 22,
     color: '#000000',
     textAlign: 'right',

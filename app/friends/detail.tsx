@@ -100,18 +100,6 @@ export default function FriendDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Trade Button */}
-        <TouchableOpacity
-          style={styles.tradeBtn}
-          onPress={() =>
-            router.push({
-              pathname: '../trade',
-              params: { friendId },
-            })
-          }
-        >
-          <Text style={styles.tradeBtnText}>Trade Reels</Text>
-        </TouchableOpacity>
 
         {/* LIST OF REELS */}
         <Text style={styles.sectionTitle}>Reel Names</Text>
@@ -135,6 +123,18 @@ export default function FriendDetailScreen() {
             <Text style={styles.statLabel}>Total Reel{friendInventory.length !== 1 ? 's' : ''}</Text>
           </View>
         </View>
+        {/* Trade Button */}
+        <TouchableOpacity
+          style={styles.tradeBtn}
+          onPress={() =>
+            router.push({
+              pathname: '../trade',
+              params: { friendId },
+            })
+          }
+        >
+          <Text style={styles.tradeBtnText}>Trade Reels</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );

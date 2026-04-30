@@ -14,6 +14,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useGameStore, InventoryItem } from '../../store/useGameStore';
 import FigmaHeader from '../../components/FigmaHeader';
 import { sendReelToFriend } from '../../services/tradeService';
+import { BUG_REEL_FRAMES } from '../../constants/reels-database';
 
 const { width } = Dimensions.get('window');
 const CARD = (width - 48 - 12) / 2;
@@ -60,11 +61,15 @@ export default function TradeScreen() {
         onPress={() => setSelectedId(selected ? null : item.reelId)}
         activeOpacity={0.8}
       >
-        <View style={styles.reelPreview}>
-          <View style={styles.reelIconBox}>
-            <View style={styles.reelIconInner} />
-          </View>
-        </View>
+        <Image
+          source={
+            BUG_REEL_FRAMES[
+            Math.floor(Math.random() * 4)
+            ]
+          }
+          style={styles.reelPreview}
+          resizeMode="contain"
+        />
         <Text style={styles.cardName} numberOfLines={1}>
           {item.name !== 'Unnamed Reel' ? item.name : 'Unnamed'}
         </Text>
@@ -110,7 +115,7 @@ export default function TradeScreen() {
                 Send Reel
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity style={styles.greyButton} onPress={() => router.back()}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -122,7 +127,11 @@ export default function TradeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Image
-              source={require('../../assets/figma/trade-blue.png')}
+              source={
+                BUG_REEL_FRAMES[
+                Math.floor(Math.random() * 4)
+                ]
+              }
               style={styles.modalIllustration}
               resizeMode="contain"
             />
@@ -191,11 +200,18 @@ const styles = StyleSheet.create({
   cardName: { fontFamily: 'Agdasima', fontSize: 14, color: '#000000' },
   colorDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#9cebff' },
   footer: { padding: 20, gap: 12 },
-  sendBtn: { backgroundColor: '#9cebff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
-  sendBtnDisabled: { backgroundColor: '#e8e8e8' },
+  sendBtn: { backgroundColor: '#9cebff', borderRadius: 30, paddingVertical: 13, alignItems: 'center' },
+  sendBtnDisabled: { backgroundColor: '#D9D9D9' },
   sendBtnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
   sendBtnTextDisabled: { color: '#a7a7a7' },
-  cancelText: { fontFamily: 'Agdasima', fontSize: 16, color: '#a7a7a7', textAlign: 'center' },
+  cancelText: { fontFamily: 'Agdasima', fontSize: 20, color: '#a7a7a7', textAlign: 'center' },
+  greyButton: {
+    paddingVertical: 13,
+    marginVertical: 5,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 30,
+    alignItems: "center"
+  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
   emptyTitle: { fontFamily: 'Dokdo', fontSize: 32, color: '#000000' },
   emptyBody: { fontFamily: 'Agdasima', fontSize: 18, color: '#a7a7a7' },
@@ -236,6 +252,6 @@ const styles = StyleSheet.create({
   modalBtn: { flex: 1, borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
   modalBtnCancel: { backgroundColor: '#e0e0e0' },
   modalBtnSend: { backgroundColor: '#9cebff' },
-  modalBtnCancelText: { fontFamily: 'Agdasima', fontSize: 18, color: '#555' },
+  modalBtnCancelText: { fontFamily: 'Agdasima', fontSize: 18, color: '#000000' },
   modalBtnSendText: { fontFamily: 'Agdasima', fontSize: 18, color: '#000000' },
 });

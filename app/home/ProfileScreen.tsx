@@ -52,10 +52,9 @@ export default function ProfileScreen() {
             resizeMode="contain"
           />
 
-          <View style={styles.avatarGlow} />
-
           <TouchableOpacity
             onPress={() => router.push('/(auth)/set-username')}
+            style={styles.blueButton}
           >
             <Text style={styles.username}>
               {user?.username ?? 'No Username'}
@@ -141,6 +140,18 @@ const styles = StyleSheet.create({
     color: '#000000',
     lineHeight: 32,
   },
+    blueButton: {
+    padding: 12,
+    marginVertical: 5,
+    backgroundColor: "#9DEBFF",
+    opacity: 0.9,
+    width: 200,
+    height: 35,
+    borderRadius: 50,
+    marginTop: -12,
+    marginBottom: 12,
+    alignItems: "center",
+  },
   headerTitle: {
     fontFamily: 'Dokdo',
     fontSize: 64,
@@ -171,20 +182,10 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
   },
-  avatarGlow: {
-    width: 180,
-    height: 28,
-    borderRadius: 50,
-    backgroundColor: '#9cebff',
-    opacity: 0.7,
-    marginTop: -12,
-    marginBottom: 8,
-  },
   username: {
     fontFamily: 'Dokdo',
     fontSize: 24,
     color: '#000000',
-    marginBottom: 8,
   },
   stepsSection: {
     alignItems: 'center',

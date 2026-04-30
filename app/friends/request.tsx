@@ -56,7 +56,7 @@ export default function SendFriendRequestScreen() {
         return;
       }
 
-      // add real friend (with UID)
+      // add friend (with UID)
       addFriend({
         uid: user.id,
         username: user.username,

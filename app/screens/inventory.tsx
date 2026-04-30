@@ -54,7 +54,7 @@ export default function InventoryScreen() {
   const handleRelease = () => {
     releaseReel(selectedId!);
     if (!selected) return;
-      router.push({
+    router.push({
       pathname: "/release/named-post",
       params: {
         name: selected.name,
@@ -136,11 +136,10 @@ export default function InventoryScreen() {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={{ position: "relative" }}>
-          <Text style={styles.outline}>Inventory</Text>
           <Text style={styles.title}>Inventory</Text>
         </View>
         <Text style={styles.capacity}>
-          Inventory: ({inventory.length} / {INVENTORY_SIZE})
+          capacity: ({inventory.length} / {INVENTORY_SIZE})
         </Text>
       </View>
 
@@ -341,31 +340,21 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: "#9DEBFF",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginBottom: 10,
+    paddingTop: 52,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
     alignItems: "center",
   },
   title: {
-    fontSize: 60,
-    fontWeight: "bold",
+    fontSize: 64,
     marginBottom: 10,
     fontFamily: "Dokdo",
     color: "black",
   },
-  outline: {
-    position: "absolute",
-    fontSize: 65,
-    fontFamily: "Dokdo",
-    color: "white",
-    left: -10,
-    top: 0,
-  },
   capacity: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 22,
     marginBottom: 10,
-    textAlign: "center",
+    textAlign: "left",
     color: "#444",
     fontFamily: "Dokdo",
   },

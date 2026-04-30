@@ -230,13 +230,13 @@ export default function HomeScreen({ navigation }: RouteProps) {
     return () => clearInterval(interval);
   }, [animating]);
 
-  // useEffect(() => {
-  //   if (steps >= nextCheckpoint.current) {
-  //     setModalVisible(true); // Open popup modal
-  //     // const t = setTimeout(() => router.push('./catching-screen'), 600);
-  //     //return () => clearTimeout(t); TODO
-  //   }
-  // }, [steps]);
+  useEffect(() => {
+    if (steps >= nextCheckpoint.current) {
+      setModalVisible(true); // Open popup modal
+      // const t = setTimeout(() => router.push('./catching-screen'), 600);
+      //return () => clearTimeout(t); TODO
+    }
+  }, [steps]);
   useEffect(() => {
     if (animating) return; // ← don't override the animation
     const pos = getPosForSteps(steps);
