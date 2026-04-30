@@ -18,8 +18,6 @@ export default function CatchPopup() {
   useEffect(() => {
     const reelId = String(Math.floor(Math.random() * 20));
 
-    addReel(reelId);
-
     reelRef.current = { reelId };
   }, []);
 
