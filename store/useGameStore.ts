@@ -51,6 +51,8 @@ interface GameState {
   steps: number;
 
   checkpointPending: boolean;
+  claimedCheckpoints: Set<number>;         
+  claimCheckpoint: (cp: number) => void;    
 
   // ------------------------
   // AUTH
@@ -98,6 +100,13 @@ interface GameState {
  */
 
 export const useGameStore = create<GameState>((set, get) => ({
+  claimedCheckpoints: new Set<number>(),
+
+claimCheckpoint: (cp) =>
+  set((state) => ({
+    claimedCheckpoints: new Set(state.claimedCheckpoints).add(cp),
+  })),
+
   // ------------------------
   // AUTH
   // ------------------------
@@ -109,15 +118,16 @@ export const useGameStore = create<GameState>((set, get) => ({
   setUser: (user) => set({ user }),
 
   clearUser: () =>
-    set({
-      authUser: null,
-      user: null,
-      inventory: [],
-      friends: [],
-      incoming: {},
-      steps: 0,
-      checkpointPending: false,
-    }),
+  set({
+    authUser: null,
+    user: null,
+    inventory: [],
+    friends: [],
+    incoming: {},
+    steps: 0,
+    checkpointPending: false,
+    claimedCheckpoints: new Set<number>(),  // ← add this
+  }),
 
   // ------------------------
   // INVENTORY
