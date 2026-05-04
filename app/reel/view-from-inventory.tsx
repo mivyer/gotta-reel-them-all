@@ -48,6 +48,8 @@ export default function WatchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginHorizontal: -100, // fixing border empty space
+
     backgroundColor: "white",
   },
 
@@ -94,9 +96,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   nameBtnText: {
-    fontFamily: "Dokdo",
-    fontSize: 24,
-    color: "#000000",
+    fontFamily: 'Agdasima',
+    fontSize: 18,
+    color: '#000000',
   },
   btnRow: {
     position: "absolute",
