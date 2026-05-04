@@ -51,6 +51,8 @@ interface GameState {
   steps: number;
 
   checkpointPending: boolean;
+  claimedCheckpoints: Set<number>;
+  claimCheckpoint: (cp: number) => void;
 
   // ------------------------
   // AUTH
@@ -98,6 +100,13 @@ interface GameState {
  */
 
 export const useGameStore = create<GameState>((set, get) => ({
+  claimedCheckpoints: new Set<number>(),
+
+  claimCheckpoint: (cp) =>
+    set((state) => ({
+      claimedCheckpoints: new Set(state.claimedCheckpoints).add(cp),
+    })),
+
   // ------------------------
   // AUTH
   // ------------------------
@@ -117,6 +126,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       incoming: {},
       steps: 0,
       checkpointPending: false,
+      claimedCheckpoints: new Set<number>(),  // ← add this
     }),
 
   // ------------------------
@@ -156,54 +166,54 @@ export const useGameStore = create<GameState>((set, get) => ({
   setFriends: (friends) => set({ friends }),
 
   addFriend: async (friend) => {
-  const { friends, user: authUser } = get();
-  if (!authUser?.uid) return;
+    const { friends, user: authUser } = get();
+    if (!authUser?.uid) return;
 
-  // Prevent duplicates locally
-  if (friends.some((f) => f.uid === friend.uid)) return;
+    // Prevent duplicates locally
+    if (friends.some((f) => f.uid === friend.uid)) return;
 
-  // --- 1. Update current user ---
-  const updated = [...friends, friend];
-  set({ friends: updated });
-
-  await setDoc(
-    doc(DB, "users", authUser.uid),
-    { friends: updated },
-    { merge: true }
-  );
-
-  // --- 2. Update the OTHER user ---
-  const friendRef = doc(DB, "users", friend.uid);
-  const friendSnap = await getDoc(friendRef);
-
-  let friendFriends: Friend[] = [];
-
-if (friendSnap.exists()) {
-  friendFriends = friendSnap.data().friends || [];
-}
-
-const alreadyAdded = friendFriends.some(
-  (f) => f.uid === authUser.uid
-);
-
-  if (!alreadyAdded) {
-    const updatedFriendFriends = [
-      ...friendFriends,
-      {
-        uid: authUser.uid,
-        username: authUser.username, // include whatever fields you store
-      },
-    ];
+    // --- 1. Update current user ---
+    const updated = [...friends, friend];
+    set({ friends: updated });
 
     await setDoc(
-      friendRef,
-      { friends: updatedFriendFriends },
+      doc(DB, "users", authUser.uid),
+      { friends: updated },
       { merge: true }
     );
-  }
-},
 
- 
+    // --- 2. Update the OTHER user ---
+    const friendRef = doc(DB, "users", friend.uid);
+    const friendSnap = await getDoc(friendRef);
+
+    let friendFriends: Friend[] = [];
+
+    if (friendSnap.exists()) {
+      friendFriends = friendSnap.data().friends || [];
+    }
+
+    const alreadyAdded = friendFriends.some(
+      (f) => f.uid === authUser.uid
+    );
+
+    if (!alreadyAdded) {
+      const updatedFriendFriends = [
+        ...friendFriends,
+        {
+          uid: authUser.uid,
+          username: authUser.username, // include whatever fields you store
+        },
+      ];
+
+      await setDoc(
+        friendRef,
+        { friends: updatedFriendFriends },
+        { merge: true }
+      );
+    }
+  },
+
+
   // ------------------------
   // INCOMING
   // ------------------------

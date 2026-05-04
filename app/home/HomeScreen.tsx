@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, Image, Modal, TouchableOpacity,
   Animated, Dimensions, ScrollView,
@@ -17,7 +17,7 @@ const H = Dimensions.get('window').height;
 const CANVAS_H = H * 10;
 
 // ── Checkpoint config ─────────────────────────────────────────────────────────
-  const START_STEPS = 0; // hardcoded launch value — swap for pedometer later
+const START_STEPS = 0; // hardcoded launch value — swap for pedometer later
 
 // ── Path waypoints (symmetric S-curve) ───────────────────────────────────────
 const WAYPOINTS = [
@@ -159,6 +159,8 @@ interface RouteProps {
 }
 
 export default function HomeScreen({ navigation }: RouteProps) {
+  const modalShown = useRef(false);
+
   const nextCheckpoint = useRef(500); // first reel-catch trigger
   const [tappedCheckpoint, setTappedCheckpoint] = useState<number>(0);
 
@@ -167,6 +169,9 @@ export default function HomeScreen({ navigation }: RouteProps) {
   const steps = useGameStore((state) => state.steps);
   const setSteps = useGameStore((state) => state.setSteps);
   const incrementSteps = useGameStore((state) => state.incrementSteps);
+
+  const claimedCheckpoints = useGameStore((state) => state.claimedCheckpoints);
+  const claimCheckpoint = useGameStore((state) => state.claimCheckpoint);
 
   const initPos = getPosForSteps(START_STEPS);
   const animX = useRef(new Animated.Value(initPos.x)).current;
@@ -182,12 +187,26 @@ export default function HomeScreen({ navigation }: RouteProps) {
     ).start();
   }, []);
 
+
+  const animateTo = useCallback((targetSteps: number, durationOverride?: number) => {
+    const endPos = getPosForSteps(targetSteps);
+    const currentSteps = useGameStore.getState().steps;
+    const distance = Math.abs(targetSteps - currentSteps);
+    const duration = durationOverride ?? Math.min(Math.max(distance * 2, 500), 4000);
+
+    Animated.parallel([
+      Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
+      Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
+    ]).start();
+  }, [animX, animY]);
+
   const [animating, setAnimating] = useState(false);
   const [numStepsEntered, setNumStepsEntered] = useState(0);
   const [inputText, setInputText] = useState('');
 
   // Add a ref to auto-scroll to the avatar
   const scrollRef = useRef<ScrollView>(null);
+
 
   // Auto-scroll to follow the avatar as it moves
   useEffect(() => {
@@ -212,7 +231,6 @@ export default function HomeScreen({ navigation }: RouteProps) {
     ]).start(({ finished }) => {
       if (finished) {
         setAnimating(false);
-        setModalVisible(true); // ← open modal only after animation completes
       }
     });
 
@@ -231,17 +249,16 @@ export default function HomeScreen({ navigation }: RouteProps) {
   }, [animating]);
 
   useEffect(() => {
-    if (steps >= nextCheckpoint.current) {
-      setModalVisible(true); // Open popup modal
-      // const t = setTimeout(() => router.push('./catching-screen'), 600);
-      //return () => clearTimeout(t); TODO
+    if (steps >= nextCheckpoint.current && !modalShown.current && !animating) {
+      modalShown.current = true;
+      setTappedCheckpoint(nextCheckpoint.current);  // ← add this line
+      // setModalVisible(true);
     }
-  }, [steps]);
+  }, [steps, animating]);
+  // AFTER (smooth animation):
   useEffect(() => {
-    if (animating) return; // ← don't override the animation
-    const pos = getPosForSteps(steps);
-    animX.setValue(pos.x);
-    animY.setValue(pos.y);
+    if (animating) return; // checkpoint animation owns this
+    animateTo(steps);
   }, [steps, animating]);
 
   useEffect(() => {
@@ -253,31 +270,27 @@ export default function HomeScreen({ navigation }: RouteProps) {
   }, []);
 
   const handleConfirmCatch = () => {
+    claimCheckpoint(tappedCheckpoint);  // claim the one shown in modal, not nextCheckpoint
     setModalVisible(false);
     setModalMode("actions");
-    nextCheckpoint.current += 500
-    // navigate to catcing screen
+    nextCheckpoint.current = tappedCheckpoint + 500;  // ← base off tappedCheckpoint, not a raw +500
+    modalShown.current = false;
     router.replace('/catch');
   };
 
   const handleStepsEntered = (stepsValue: number) => {
     setSteps(stepsValue);
-    // animate to exact position of the steps entered (no checkpoint trigger)
-    const endPos = getPosForSteps(stepsValue);
-    const currentPos = getPosForSteps(useGameStore.getState().steps);
-    const distance = Math.abs(stepsValue - useGameStore.getState().steps);
-    const duration = Math.min(Math.max(distance * 2, 500), 4000);
-
-    Animated.parallel([
-      Animated.timing(animX, { toValue: endPos.x, duration, useNativeDriver: false }),
-      Animated.timing(animY, { toValue: endPos.y, duration, useNativeDriver: false }),
-    ]).start();
   };
 
   const handleCirclePress = (cpSteps: number) => {
     setTappedCheckpoint(cpSteps);
     setModalVisible(true);
   };
+
+  useEffect(() => {
+    if (animating) return;
+    animateTo(steps);
+  }, [steps, animating]);
 
 
   // State to control modal (aka pop-up) visibility
@@ -289,7 +302,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
 
   // ── Circle state helper ───────────────────────────────────────────────────────
   function getCircleState(circleSteps: number, currentSteps: number): 'used' | 'unlocked' | 'locked' {
-    if (currentSteps >= circleSteps + 500) return 'used';
+    if (claimedCheckpoints.has(circleSteps)) return 'used';
     if (currentSteps >= circleSteps) return 'unlocked';
     return 'locked';
   }
@@ -361,7 +374,7 @@ export default function HomeScreen({ navigation }: RouteProps) {
               styles.avatarOuter,
               {
                 left: Animated.subtract(animX, AVATAR_SIZE / 2),
-                top: Animated.subtract(animY, AVATAR_SIZE / 2),
+                top: Animated.subtract(animY, AVATAR_SIZE + 20),
               },
             ]}
           >
@@ -401,7 +414,10 @@ export default function HomeScreen({ navigation }: RouteProps) {
                 <View style={styles.buttonRow}>
                   <TouchableOpacity
                     style={styles.greyButton}
-                    onPress={() => setModalVisible(false)}>
+                    onPress={() => {
+                      claimCheckpoint(tappedCheckpoint);  // ← was claimedCheckpoints.current.add(...)
+                      setModalVisible(false);
+                    }}>
                     <Text style={styles.buttonText}>No reels for me...</Text>
                   </TouchableOpacity>
 

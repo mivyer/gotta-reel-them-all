@@ -177,7 +177,7 @@ export default function InventoryScreen() {
 
                 <Text
                   style={{
-                    textAlign: "left",
+                    textAlign: "center",
                     fontSize: 20,
                     fontFamily: "Agdasima",
                   }}
@@ -394,14 +394,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
-  modalContent: {
-    paddingTop: 60,
-    width: "55%",
-    height: "80%",
-    backgroundColor: "white",
-    alignItems: "center",
-    padding: 20,
-  },
   renameModalContent: {
     paddingTop: 60,
     width: "30%",
@@ -429,12 +421,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "black",
   },
+  modalContent: {
+    paddingTop: 60,
+    width: "90%",        // 👈 wider, was 55%
+    backgroundColor: "white",
+    alignItems: "center",
+    padding: 20,
+    borderRadius: 16,    // 👈 add rounded corners
+  },
   greyButton: {
     padding: 12,
     marginVertical: 5,
     backgroundColor: "#D9D9D9",
     borderRadius: 8,
-    width: 90,
+    width: 100,          // 👈 slightly wider, was 90
+    alignItems: 'center', // 👈 center the text
   },
   blueButton: {
     padding: 12,

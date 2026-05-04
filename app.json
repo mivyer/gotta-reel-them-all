@@ -4,6 +4,7 @@
     "slug": "gotta-reel-them-all",
     "version": "1.0.0",
     "scheme": "gottareelthemall",
+    "icon": null,
     "platforms": [
       "ios",
       "android",

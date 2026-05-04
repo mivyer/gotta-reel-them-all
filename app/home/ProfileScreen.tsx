@@ -140,18 +140,20 @@ const styles = StyleSheet.create({
     color: '#000000',
     lineHeight: 32,
   },
-    blueButton: {
-    padding: 12,
-    marginVertical: 5,
-    backgroundColor: "#9DEBFF",
-    opacity: 0.9,
-    width: 200,
-    height: 35,
-    borderRadius: 50,
-    marginTop: -12,
-    marginBottom: 12,
-    alignItems: "center",
-  },
+  blueButton: {
+      padding: 12,
+      marginVertical: 5,
+      backgroundColor: "#9DEBFF",
+      opacity: 0.9,
+      width: 200,
+      height: 45,        // 👈 increase from 35 to 45
+      borderRadius: 50,
+      marginTop: -12,
+      marginBottom: 12,
+      alignItems: "center",
+      justifyContent: 'center',  // 👈 add this so text centers vertically
+    },
+  // },
   headerTitle: {
     fontFamily: 'Dokdo',
     fontSize: 64,
