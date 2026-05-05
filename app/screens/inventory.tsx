@@ -135,6 +135,12 @@ export default function InventoryScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/screens')}
+        >
+          <Text style={styles.backArrow}>‹</Text>
+        </TouchableOpacity>
         <View style={{ position: "relative" }}>
           <Text style={styles.title}>Inventory</Text>
         </View>
@@ -146,7 +152,7 @@ export default function InventoryScreen() {
       <FlatList
         data={slots}
         renderItem={renderItem}
-        keyExtractor={(_, index) => `slot-${index}`}
+        keyExtractor={(item, index) => item ? item.reelId : `empty-${index}`}        
         numColumns={2}
         style={{ flex: 1 }}
       />
@@ -344,6 +350,35 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
     alignItems: "center",
+  },
+    header: {
+    backgroundColor: '#9cebff',
+    paddingTop: 52,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    zIndex: 10,  // ← add this
+  },
+  backButton: {
+    position: 'absolute',
+    top: 52,
+    left: 16,
+    width: 44,
+    height: 44,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    zIndex: 10,  // ← add this
+  },
+  backArrow: {
+    fontSize: 28,
+    color: '#000000',
+    lineHeight: 32,
   },
   title: {
     fontSize: 64,

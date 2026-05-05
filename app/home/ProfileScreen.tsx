@@ -19,6 +19,9 @@ export default function ProfileScreen() {
 
   const stepCount = useGameStore((s) => s.steps);
 
+  const totalReelsCaught = useGameStore((s) => s.totalReelsCaught);
+  const totalReelsNamed = useGameStore((s) => s.totalReelsNamed);
+
   const namedReels = inventory.filter(
     (r) => r.name !== 'Unnamed Reel :('
   );
@@ -77,21 +80,21 @@ export default function ProfileScreen() {
             <Text style={styles.statValue}>
               {inventory.length}
             </Text>
-            <Text style={styles.statLabel}>Total Reels</Text>
+            <Text style={styles.statLabel}>Inventory Reels</Text>
           </View>
 
           <View style={styles.statBox}>
             <Text style={styles.statValue}>
-              {namedReels.length}
+              {totalReelsNamed}
             </Text>
-            <Text style={styles.statLabel}>Named</Text>
+            <Text style={styles.statLabel}>Total Reels Saved</Text>
           </View>
         </View>
 
         {/* Named reels */}
         {namedReels.length > 0 && (
           <View style={styles.namedSection}>
-            <Text style={styles.sectionTitle}>Named Reels</Text>
+            <Text style={styles.sectionTitle}>Inventory</Text>
 
             {namedReels.map((reel) => (
               <View key={reel.reelId} style={styles.namedRow}>
@@ -118,6 +121,7 @@ const styles = StyleSheet.create({
     paddingTop: 52,
     paddingBottom: 20,
     paddingHorizontal: 20,
+    zIndex: 10,  // ← add this
   },
   backButton: {
     position: 'absolute',
@@ -134,6 +138,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+    zIndex: 10,  // ← add this
   },
   backArrow: {
     fontSize: 28,

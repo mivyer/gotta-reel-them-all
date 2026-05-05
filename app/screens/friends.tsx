@@ -66,7 +66,7 @@ export default function FriendsScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.push('/screens')}
+          onPress={() => router.back()}
         >
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     paddingTop: 52,
     paddingBottom: 20,
     paddingHorizontal: 20,
+    zIndex: 10,  // ← add this
   },
   backButton: {
     position: 'absolute',
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+    zIndex: 10,  // ← add this
   },
   backArrow: {
     fontSize: 28,

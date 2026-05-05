@@ -50,19 +50,16 @@ export default function RootLayout() {
         <Stack.Screen name="reel/name" options={{ headerShown: false }} />
         <Stack.Screen name="reel/saved" options={{ headerShown: false }} />
         <Stack.Screen name="bug-info" options={{ headerShown: false }} />
-        <Stack.Screen name="release/named" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="release/named" options={{ headerShown: false }} /> */}
         <Stack.Screen name="release/named-post" options={{ headerShown: false }} />
-        <Stack.Screen name="release/wild" options={{ headerShown: false }} />
+        <Stack.Screen name="release/wild-confirmation" options={{ headerShown: false }} />
         <Stack.Screen name="release/wild-post" options={{ headerShown: false }} />
         <Stack.Screen name="friends/request" options={{ headerShown: false }} />
         <Stack.Screen name="friends/detail" options={{ headerShown: false }} />
         <Stack.Screen name="trade/index" options={{ headerShown: false }} />
         <Stack.Screen name="trade/sent" options={{ headerShown: false }} />
         <Stack.Screen name="trade/incoming" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="checkpoint"
-          options={{ presentation: 'modal', headerShown: false }}
-        />
+        {/* <Stack.Screen name="checkpoint" options={{ presentation: 'modal', headerShown: false }} /> */}
       </Stack>
       {(!fontsLoaded || loading) && (
         <View style={{

@@ -3,6 +3,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { DB } from "../services/firebase";
 import { useGameStore } from "../store/useGameStore";
 
+
 export const useUserData = (uid: string | null) => {
   const setInventory = useGameStore((s) => s.setInventory);
   const setUser = useGameStore((s) => s.setUser);
@@ -23,6 +24,8 @@ export const useUserData = (uid: string | null) => {
       setInventory(data.inventory || []);
       setFriends(data.friends || []);
       setIncoming(data.incoming || {});
+      useGameStore.getState().setTotalReelsCaught(data.totalReelsCaught ?? 0);
+      useGameStore.getState().setTotalReelsNamed(data.totalReelsNamed ?? 0);
     });
 
     return unsub;

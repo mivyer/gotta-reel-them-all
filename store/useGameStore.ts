@@ -3,7 +3,7 @@ import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { DB } from "../services/firebase";
 import { IncomingSlot } from "../services/tradeService";
 
-const saveToFirestore = (uid: string, data: Partial<{ inventory: InventoryItem[]; friends: Friend[] }>) => {
+const saveToFirestore = (uid: string, data: Partial<{ inventory: InventoryItem[]; friends: Friend[]; totalReelsCaught: number; totalReelsNamed: number }>) => {
   updateDoc(doc(DB, "users", uid), data).catch((e) => console.log("Firestore save error:", e));
 };
 
@@ -33,6 +33,7 @@ interface UserData {
 // incoming map: key = friend index (as string), value = slot or null
 export type IncomingMap = Record<string, IncomingSlot | null>;
 
+
 /**
  * ------------------------
  * STATE
@@ -60,6 +61,12 @@ interface GameState {
   setAuthUser: (user: any) => void;
   setUser: (user: UserData) => void;
   clearUser: () => void;
+
+  totalReelsCaught: number;
+  totalReelsNamed: number;
+  setTotalReelsCaught: (n: number) => void;
+  setTotalReelsNamed: (n: number) => void;
+  incrementTotalReelsCaught: () => void;
 
   // ------------------------
   // INVENTORY
@@ -126,7 +133,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       incoming: {},
       steps: 0,
       checkpointPending: false,
-      claimedCheckpoints: new Set<number>(),  // ← add this
+      claimedCheckpoints: new Set<number>(),
+      totalReelsCaught: 0,  // 👈 add this
     }),
 
   // ------------------------
@@ -137,11 +145,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   setInventory: (inv) => set({ inventory: inv }),
 
   addReel: (reelId) => {
-    const { inventory, user: authUser } = get();
+    const { inventory, user: authUser, totalReelsCaught } = get();
     if (inventory.some((r) => r.reelId === reelId)) return;
     const updated = [...inventory, { reelId, name: "Unnamed Reel" }];
-    set({ inventory: updated });
-    if (authUser?.uid) saveToFirestore(authUser.uid, { inventory: updated });
+    const newTotal = totalReelsCaught + 1;
+    set({ inventory: updated, totalReelsCaught: newTotal });
+    if (authUser?.uid) saveToFirestore(authUser.uid, {
+      inventory: updated,
+      totalReelsCaught: newTotal
+    });
   },
 
   releaseReel: (reelId) => {
@@ -152,10 +164,14 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   renameReel: (reelId, name) => {
-    const { inventory, user: authUser } = get();
+    const { inventory, user: authUser, totalReelsNamed } = get();
     const updated = inventory.map((r) => r.reelId === reelId ? { ...r, name } : r);
-    set({ inventory: updated });
-    if (authUser?.uid) saveToFirestore(authUser.uid, { inventory: updated });
+    const newNamed = totalReelsNamed + 1;
+    set({ inventory: updated, totalReelsNamed: newNamed });
+    if (authUser?.uid) saveToFirestore(authUser.uid, {
+      inventory: updated,
+      totalReelsNamed: newNamed
+    });
   },
 
   // ------------------------
@@ -239,4 +255,13 @@ export const useGameStore = create<GameState>((set, get) => ({
   checkpointPending: false,
 
   setCheckpoint: (val) => set({ checkpointPending: val }),
+  totalReelsCaught: 0,
+  totalReelsNamed: 0,
+
+  setTotalReelsCaught: (n) => set({ totalReelsCaught: n }),
+  setTotalReelsNamed: (n) => set({ totalReelsNamed: n }),
+
+  incrementTotalReelsCaught: () =>
+    set((state) => ({ totalReelsCaught: state.totalReelsCaught + 1 })),
+
 }));
