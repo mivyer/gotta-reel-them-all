@@ -145,7 +145,7 @@ export default function InventoryScreen() {
           <Text style={styles.title}>Inventory</Text>
         </View>
         <Text style={styles.capacity}>
-          capacity: ({inventory.length} / {INVENTORY_SIZE})
+          Capacity: ({inventory.length} / {INVENTORY_SIZE})
         </Text>
       </View>
 
@@ -479,11 +479,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    color: "black",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontFamily: "Agdasima",
+    fontFamily: 'Agdasima',
     fontSize: 20,
+    color: '#000000',
   },
   buttonRow: {
     flexDirection: "row",

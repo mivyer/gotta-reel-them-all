@@ -14,8 +14,11 @@ export default function NamedPostReleaseScreen() {
       
   return (
     <View style={styles.container}>
-      <Image source={bgImage} style={styles.bgImage} resizeMode="cover" />
-      <View style={styles.content}>
+    <Image
+          source={bgImage}
+          style={[styles.creatureImg, { width:400 , height: 300 }]}
+          resizeMode="contain"
+        />            <View style={styles.content}>
         <Text style={styles.byeTitle}>Bye-Bye!</Text>
         <Text style={styles.description}>
           You released the{'\n'}bug-reel...
@@ -41,7 +44,7 @@ export default function NamedPostReleaseScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#9cebff' },
-  bgImage: { ...StyleSheet.absoluteFillObject as any, width: '100%', height: '100%', opacity: 0.85 },
+  creatureImg: {alignSelf: 'center', marginTop: 60 },
   content: {
     flex: 1, alignItems: 'center', justifyContent: 'flex-end',
     padding: 32, paddingBottom: 64, gap: 16,

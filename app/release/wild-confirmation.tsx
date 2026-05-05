@@ -142,11 +142,9 @@ const styles = StyleSheet.create({
   },
 
   question: {
-    fontFamily: 'Dokdo',
+    fontFamily: 'Agdasima',
     fontSize: 28,
     color: '#000000',
-    textAlign: 'center',
-    lineHeight: 34,
   },
 
   btnRow: { flexDirection: 'row', gap: 14, width: '100%' },
@@ -188,6 +186,7 @@ const styles = StyleSheet.create({
 
   modalContainer: {
     width: '80%',
+    
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
@@ -202,6 +201,7 @@ const styles = StyleSheet.create({
 
   modalBtnRow: {
     flexDirection: 'row',
+    width: '40%',
     gap: 12,
   },
 
