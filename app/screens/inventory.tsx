@@ -138,9 +138,27 @@ export default function InventoryScreen() {
         <View style={{ position: "relative" }}>
           <Text style={styles.title}>Inventory</Text>
         </View>
-        <Text style={styles.capacity}>
-          capacity: ({inventory.length} / {INVENTORY_SIZE})
-        </Text>
+         <Text style={styles.capacity}>
+            capacity: ({inventory.length} / {INVENTORY_SIZE})
+          </Text>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {inventory.length >= INVENTORY_SIZE && (
+            <>
+              <Image
+                source={require('../../assets/images/warning.png')}
+                style={{ width: 30, height: 30, marginLeft: 8, marginBottom: 5 }}
+              />
+              <Text style={[styles.reelName, { marginLeft: 5 }]}>
+                Inventory full! You must let some bug-reels go before you can save more.
+              </Text>
+              <Image
+                source={require('../../assets/images/warning.png')}
+                style={{ width: 30, height: 30, marginLeft: 8, marginBottom: 5 }}
+              />
+            </>
+          )}
+        </View>
       </View>
 
       <FlatList

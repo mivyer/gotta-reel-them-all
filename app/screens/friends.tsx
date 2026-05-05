@@ -91,12 +91,14 @@ export default function FriendsScreen() {
               )}
             </TouchableOpacity>
 
+            {friends.length < MAX_FRIENDS && (
             <TouchableOpacity
               style={styles.addFriendButton}
               onPress={() => router.push('/friends/request')}
             >
               <Text style={styles.addFriendText}>Add Friend</Text>
             </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
