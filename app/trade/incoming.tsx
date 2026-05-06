@@ -101,7 +101,7 @@ export default function IncomingTradesScreen() {
 
   return (
     <View style={styles.container}>
-      <FigmaHeader title="INCOMING" onBack={() => router.back()} />
+      <FigmaHeader title="Inbox" onBack={() => router.back()} />
 
       {pendingTrades.length === 0 ? (
         <View style={styles.center}>

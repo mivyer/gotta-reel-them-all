@@ -81,7 +81,7 @@ export default function TradeScreen() {
   return (
     <View style={styles.container}>
       <FigmaHeader
-        title="OUTBOX"
+        title="Outbox"
         subtitle={friend ? `→ ${friend.username}` : undefined}
         onBack={() => router.back()}
       />
