@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   FlatList,
   TouchableOpacity,
@@ -20,6 +21,13 @@ export default function IncomingTradesScreen() {
   const inventory = useGameStore((s) => s.inventory);
 
   const [actionId, setActionId] = useState<string | null>(null);
+
+  const bugReelFrames = [
+    require("../../assets/images/bugreel0.png"),
+    require("../../assets/images/bugreel1.png"),
+    require("../../assets/images/bugreel2.png"),
+    require("../../assets/images/bugreel3.png"),
+  ];
 
   // Build list from friends array — slot index = friend's index
   const pendingTrades = friends
@@ -57,9 +65,12 @@ export default function IncomingTradesScreen() {
     const busy = actionId === key;
     return (
       <View style={styles.card}>
-        <View style={styles.reelIcon}>
-          <View style={styles.reelIconInner} />
-        </View>
+          <Image
+            source={bugReelFrames[Math.floor(Math.random() * 4)]}
+            style={styles.reelIcon}
+            resizeMode="contain"
+          />
+
         <View style={styles.cardInfo}>
           <Text style={styles.reelName}>"{item.slot.reelName}"</Text>
           <Text style={styles.fromText}>from {item.friend.username}</Text>

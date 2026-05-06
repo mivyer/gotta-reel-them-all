@@ -17,7 +17,7 @@ export default function WildPostReleaseScreen() {
     <View style={styles.container}>
     <Image
           source={bgImage}
-          style={[styles.creatureImg, { width:400 , height: 300 }]}
+          style={[styles.creatureImg, { width:300 , height: 500 }]}
           resizeMode="contain"
         />      
         <View style={styles.content}>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     padding: 32, paddingBottom: 64, gap: 16,
   },
   byeTitle: { fontFamily: 'Dokdo', fontSize: 64, color: '#000000', textAlign: 'center' },
-  description: { fontFamily: 'Agdasima', fontSize: 32, color: '#000000', textAlign: 'center', lineHeight: 36 },
+  description: { fontFamily: 'Dokdo', fontSize: 32, color: '#000000', textAlign: 'center', lineHeight: 36 },
   btn: { width: '100%', backgroundColor: '#ffffff', borderRadius: 30, paddingVertical: 16, alignItems: 'center' },
   btnText: { fontFamily: 'Agdasima', fontSize: 20, color: '#000000' },
 });

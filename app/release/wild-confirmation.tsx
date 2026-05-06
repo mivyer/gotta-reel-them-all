@@ -129,12 +129,12 @@ export default function WildReleaseConfirmScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#ffffff', justifyContent: 'center' },
 
   creatureImg: { alignSelf: 'center', marginTop: 60 },
 
   content: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
 
   modalBtnRow: {
     flexDirection: 'row',
-    width: '40%',
+    width: '60%',
     gap: 12,
   },
 
