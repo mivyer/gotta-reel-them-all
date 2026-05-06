@@ -309,8 +309,8 @@ export default function InventoryScreen() {
       <Modal visible={renameVisible} transparent animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.renameModalContent}>
-            <Text style={{ marginBottom: 10, fontSize: 16 }}>
-              Rename Reel
+            <Text style={styles.captiontext}>
+              What would you like to {'\n'}rename this reel to?
             </Text>
 
             <TextInput
@@ -447,9 +447,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   renameModalContent: {
-    paddingTop: 60,
-    width: "30%",
-    height: "50%",
+    flex: 0.3,
+    justifyContent: "center",
     backgroundColor: "white",
     alignItems: "center",
     padding: 20,
@@ -494,6 +493,8 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: "#9DEBFF",
     borderRadius: 8,
+    width: 100,      
+    alignItems: 'center',
   },
   buttonText: {
     fontFamily: 'Agdasima',
@@ -516,4 +517,10 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 10,
   },
+  captiontext:{
+    fontFamily: "Agdasima",
+    fontSize: 20,
+    color: '#000000',
+    margin:20,
+  }
 });
