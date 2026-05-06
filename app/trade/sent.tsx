@@ -9,6 +9,10 @@ export default function SentReelScreen() {
     tradeId: string;
   }>();
   const router = useRouter();
+   const bgImage =
+      Math.random() > 0.5
+        ? require('../../assets/images/release-reel0.png')
+        : require('../../assets/images/release-reel1.png');
 
   return (
     <View style={styles.container}>
@@ -18,7 +22,7 @@ export default function SentReelScreen() {
       <View style={styles.content}>
         {/* Flying bug illustration */}
         <Image
-          source={require('../../assets/figma/trade-sent-blue.png')}
+          source={bgImage}
           style={styles.illustration}
           resizeMode="contain"
         />
