@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 
-import { REELS_DATABASE } from '../../constants/reels-database';
+import { REELS_DATABASE , NUM_REELS} from '../../constants/reels-database';
 import BugReel1 from '../../components/bug-reel1';
 import BugReel2 from '../../components/bug-reel2';
 
@@ -16,7 +16,7 @@ export default function CatchPopup() {
   const reelRef = useRef<{ reelId: string } | null>(null);
 
   useEffect(() => {
-    const reelId = String(Math.floor(Math.random() * 20));
+    const reelId = String(Math.floor(Math.random() * NUM_REELS));
 
     reelRef.current = { reelId };
   }, []);

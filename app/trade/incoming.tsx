@@ -105,7 +105,7 @@ export default function IncomingTradesScreen() {
 
       {pendingTrades.length === 0 ? (
         <View style={styles.center}>
-          <Text style={styles.emptyTitle}>No pending trades</Text>
+          <Text style={styles.emptyTitle}>Your Inbox is empty.</Text>
           <Text style={styles.emptyBody}>When a friend sends you a reel, it'll show up here.</Text>
         </View>
       ) : (

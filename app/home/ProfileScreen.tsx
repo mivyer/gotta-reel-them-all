@@ -37,7 +37,7 @@ export default function ProfileScreen() {
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>PROFILE</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
 
         <View style={styles.capacityRow}>
           <Text style={styles.capacityText}>
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   capacityText: {
     fontFamily: 'Dokdo',
     fontSize: 22,
-    color: '#000000',
+    color: "#444",
   },
   scroll: {
     paddingBottom: 40,

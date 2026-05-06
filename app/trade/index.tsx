@@ -81,14 +81,14 @@ export default function TradeScreen() {
   return (
     <View style={styles.container}>
       <FigmaHeader
-        title="TRADE"
+        title="OUTBOX"
         subtitle={friend ? `→ ${friend.username}` : undefined}
         onBack={() => router.back()}
       />
 
       {inventory.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>No reels to trade</Text>
+          <Text style={styles.emptyTitle}>No reels to gift</Text>
           <Text style={styles.emptyBody}>Catch some reels first!</Text>
           <TouchableOpacity style={styles.catchBtn} onPress={() => router.push('/catch')}>
             <Text style={styles.catchBtnText}>Go Catch One</Text>

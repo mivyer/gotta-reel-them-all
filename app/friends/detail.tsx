@@ -133,7 +133,7 @@ export default function FriendDetailScreen() {
             })
           }
         >
-          <Text style={styles.tradeBtnText}>Trade Reels</Text>
+          <Text style={styles.tradeBtnText}>Gift a Reel!</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

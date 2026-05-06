@@ -71,7 +71,7 @@ export default function FriendsScreen() {
           <Text style={styles.backArrow}>‹</Text>
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>FRIENDS</Text>
+        <Text style={styles.headerTitle}>Friends</Text>
 
         <View style={styles.headerBottom}>
           <Text style={styles.capacityText}>
@@ -83,7 +83,7 @@ export default function FriendsScreen() {
               style={styles.incomingButton}
               onPress={() => router.push('/trade/incoming')}
             >
-              <Text style={styles.incomingText}>Trades</Text>
+              <Text style={styles.incomingText}>Inbox</Text>
               {incomingCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{incomingCount}</Text>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   capacityText: {
     fontFamily: 'Dokdo',
     fontSize: 22,
-    color: '#000000',
+    color: "#444",
   },
   headerActions: {
     flexDirection: 'row',
