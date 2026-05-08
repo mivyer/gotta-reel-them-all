@@ -1,9 +1,10 @@
 # Reel Hunters
-
+![Welcome to Reel Hunters!](ReelHunters.png)\
 Reel Hunters aims to promote more reflection and mindfulness when consuming short-form content. By disrupting that habitual motion that sucks so many people into the trance-like state of ‘doomscrolling’ through step logging and drag-net catching motions, Reel Hunters prompts users to be more conscious of the media they consume and save. Reel Hunters further reconceives shortform videos as tangible objects with more perceived value beyond temporary passive viewing --through the saving, naming, and gifting mechanisms-- lends to approaching the act of scrolling as active rather than passive. With Reel Hunters, we explore how people interact with short-form content in an increasingly bloated attention economy. How can we continue to push back against the commercialisation of a person’s attention, in a world of increasingly advanced algorithms? 
 
-
-
+## Features:
+![Some Screens!](demo_screens.png)\
+In Reel Hunters, users enter in a step count to access checkpoints where they can catch what are "bug-reels." Users have the option to catch and release a bug-reel (if its not to their liking), or save it to their inventory and give the video a name. Reel Hunters also supports adding other users as friends and the ability to send them some bug-reels (which then leaves your inventory). 
 
 ## External Libraries:
 
